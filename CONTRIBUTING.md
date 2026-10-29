@@ -65,7 +65,7 @@ The issue moves to `status:review`.
 
 A maintainer reproduces the acceptance criteria.
 
-- Pass: `/approve @user` accepts that person's part (with one submission waiting, `/approve` alone is enough). If nobody else is still working on it, the Issue is complete; otherwise a maintainer closes it with `/done`.
+- Pass: `/approve @user` accepts that person's part (with one submission waiting, `/approve` alone is enough). If nobody else is still working on it and every box under "Done when" is ticked, the Issue is complete; otherwise a maintainer ticks the boxes as each part is verified and closes it with `/done`.
 - Needs changes: `/changes @user <reason>`; that person is back to `status:claimed` with a fresh 72-hour progress window.
 - Cannot continue: `/release`
 

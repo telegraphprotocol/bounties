@@ -96,7 +96,7 @@ workflows must retain the shared `bounty-state` concurrency group.
 - That person's claim is released after 72 hours without progress; the others keep theirs. Someone whose submission is waiting for review is not released.
 - Maintainers can release a stale or invalid claim with `/release @user`. Releasing a claim also withdraws that person's pending submission; claiming again requires a new submission.
 - `/approve @user` and `/changes @user <reason>` act on one person's submission (the name can be left out when only one is waiting). Approvers must be independent of everyone who has claimed or submitted on the Issue, even after release or acceptance.
-- `/done` closes the Issue as complete once at least one part is approved.
+- `/done` closes the Issue as complete once at least one part is approved and every box under "Done when" is ticked. Tick a box only after that part is verified.
 
 Funded awards still follow `max_awards`; when several paid awards are needed, create separate slot Issues (for example `1/3`, `2/3`, `3/3`).
 

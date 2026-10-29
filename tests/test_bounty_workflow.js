@@ -185,6 +185,33 @@ async function testDoneNeedsAnApprovedPartAndAMaintainer() {
   assert.strictEqual(h.state.issue.state, 'open');
 }
 
+// A bounty with two parts under "Done when" closes only when both are ticked, even if the
+// last person working on it is approved.
+async function testDoneWhenBoxesKeepTheIssueOpen() {
+  const body = '## Done when\n- [ ] Evaluation material is in.\n- [ ] An adapter is live.\n\n## Reward\n**Unfunded.**\n';
+  const h = makeHarness({ body, permissions: { reviewer: 'write' } });
+  await h.command('alice', '/claim');
+  await h.command('alice', '/submit https://example.com/alice-evidence rows');
+  await h.command('reviewer', '/approve');
+  let parsed = parseState(h.state.comments);
+  assert.deepStrictEqual(parsed.accepted, ['alice']);
+  assert.strictEqual(h.state.issue.state, 'open', 'one part must not close it');
+  assert(h.state.issue.labels.includes('status:open'), 'others can still join');
+  assert(h.state.comments.at(-1).body.includes('2 box(es) under "Done when"'));
+  await h.command('reviewer', '/done');
+  assert.strictEqual(h.state.issue.state, 'open');
+  assert(h.state.comments.at(-1).body.includes('every box under "Done when" ticked'));
+  // One box ticked is still not enough.
+  h.state.issue.body = body.replace('- [ ] Evaluation', '- [x] Evaluation');
+  await h.command('reviewer', '/done');
+  assert.strictEqual(h.state.issue.state, 'open');
+  // Both parts verified and ticked.
+  h.state.issue.body = h.state.issue.body.replace('- [ ] An adapter', '- [x] An adapter');
+  await h.command('reviewer', '/done');
+  assert.strictEqual(h.state.issue.state, 'closed');
+  assert(h.state.issue.labels.includes('status:done'));
+}
+
 async function testReleaseOneClaimKeepsTheOthers() {
   const h = makeHarness({ permissions: { maintainer: 'write' } });
   await h.command('alice', '/claim');
@@ -601,6 +628,7 @@ async function main() {
     testChangesReturnsToSameClaimant,
     testSeveralPeopleCanClaimAndEachIsApprovedAlone,
     testDoneNeedsAnApprovedPartAndAMaintainer,
+    testDoneWhenBoxesKeepTheIssueOpen,
     testReleaseOneClaimKeepsTheOthers,
     testReleaseWithdrawsOnlyThatPersonsSubmission,
     testReclaimRequiresANewSubmission,

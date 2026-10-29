@@ -3,6 +3,7 @@
 const {
   parseState,
   snapshotReward,
+  uncheckedDoneBoxes,
   quoteMarkdown,
   permissionAllowsMaintenance,
 } = require('./bounty_state');
@@ -246,9 +247,13 @@ module.exports = async function runBountyCommand({ github, context }) {
     }
     const othersActive = state.claimants.some(c => lower(c.user) !== lower(target)) ||
       state.pendingSubmitters.some(u => lower(u) !== lower(target));
-    await transition(`<!-- telegraph-approve user="${actor}" submitter="${target}" at="${now}" -->\n` + (othersActive
+    const unticked = uncheckedDoneBoxes(issue.body);
+    const keep = !othersActive && unticked ? ' keep="open"' : '';
+    await transition(`<!-- telegraph-approve user="${actor}" submitter="${target}"${keep} at="${now}" -->\n` + (othersActive
       ? `@${target}'s part is verified and accepted by @${actor}. The bounty stays open for the others. A maintainer closes it with \`/done\`.`
-      : `Verified and approved by @${actor}. Bounty complete. Payment, when applicable, follows the separate funding and treasury process.`));
+      : unticked
+        ? `@${target}'s part is verified and accepted by @${actor}. The bounty stays open: ${unticked} box(es) under "Done when" are not ticked yet. A maintainer ticks each one once it is verified, then closes the Issue with \`/done\`.`
+        : `Verified and approved by @${actor}. Bounty complete. Payment, when applicable, follows the separate funding and treasury process.`));
     return;
   }
 
@@ -256,6 +261,11 @@ module.exports = async function runBountyCommand({ github, context }) {
     if (!(await isMaintainer())) return;
     if (!state.accepted.length) {
       await comment('`/done` needs at least one approved submission first.');
+      return;
+    }
+    const unticked = uncheckedDoneBoxes(issue.body);
+    if (unticked) {
+      await comment(`\`/done\` needs every box under "Done when" ticked first; ${unticked} still open. Tick each one once that part is verified.`);
       return;
     }
     await transition(`<!-- telegraph-done user="${actor}" at="${now}" -->\nClosed as complete by @${actor}. Accepted: ${state.accepted.map(u => '@' + u).join(', ')}. ` +
