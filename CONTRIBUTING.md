@@ -21,17 +21,17 @@ Comment:
 /claim
 ```
 
-The bot records the claimant and moves the issue to `status:claimed`.
+The bot records your claim and moves the issue to `status:claimed`. Several people can claim the same Issue, while it is `status:open`, `status:claimed` or `status:review`. Each claim has its own record, progress window and reward snapshot.
 
-A claim reserves the Issue while work is active. Post meaningful progress at least once every 72 hours:
+Keep your claim active with meaningful progress at least once every 72 hours:
 
 ```text
 /progress Provider endpoint is live; integrating the reference fixtures now.
 ```
 
-Stale claims are warned, then automatically released.
+Stale claims are warned, then automatically released, one person at a time. Other people's claims are not affected.
 
-To return the Issue for another contributor:
+To give up your own claim and withdraw its pending submission (a maintainer can release someone else's with `/release @user`):
 
 ```text
 /release
@@ -65,8 +65,8 @@ The issue moves to `status:review`.
 
 A maintainer reproduces the acceptance criteria.
 
-- Pass: `/approve`
-- Needs changes: maintainer uses `/changes <reason>`; the issue returns to `status:claimed` with the same claimant and a fresh 72-hour progress window.
+- Pass: `/approve @user` accepts that person's part (with one submission waiting, `/approve` alone is enough). If nobody else is still working on it, the Issue is complete; otherwise a maintainer closes it with `/done`.
+- Needs changes: `/changes @user <reason>`; that person is back to `status:claimed` with a fresh 72-hour progress window.
 - Cannot continue: `/release`
 
 Funded rewards follow the terms recorded when the active claim was created. The bot stores a visible snapshot and hash of the Issue's `## Reward` section at `/claim` time; payout also requires independent funding authorization.

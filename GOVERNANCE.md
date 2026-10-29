@@ -6,13 +6,13 @@ This repository coordinates public contribution work for Telegraph. Protocol sta
 
 | Role | Who | What they can do |
 |---|---|---|
-| Contributor | Anyone | Open gap reports, `/claim` an open bounty, `/progress`, `/submit`, `/release` their own claim |
-| Maintainer | GitHub users with `write`, `maintain` or `admin` permission on this repository | `/open`, `/block`, `/unblock`, `/changes`, `/approve`, release any claim |
+| Contributor | Anyone | Open gap reports, `/claim` a bounty (several people can claim one), `/progress`, `/submit`, `/release` their own claim |
+| Maintainer | GitHub users with `write`, `maintain` or `admin` permission on this repository | `/open`, `/block`, `/unblock`, `/changes @user`, `/approve @user`, `/done`, `/release @user` |
 | Operator | Maintainer who holds the private evaluation inputs and publication key | Run the evaluation-opportunity pipeline and publish its approved public output |
 
 Maintainer commands are authorised by the actor's real repository permission, not by `author_association`. The list of people holding these permissions is the repository's collaborator list.
 
-The approving maintainer must be separate from the claimant and submitter. If no
+The approving maintainer must be separate from everyone who has claimed or submitted on the Issue, including contributors whose claims were released or whose submissions were accepted. If no
 independent reviewer is available, the submission remains in review. GitHub approval
 records technical acceptance; payment requires separate funding and treasury approval
 under [the funded-launch controls](docs/maintainers/FUNDED_LAUNCH.md).

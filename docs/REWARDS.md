@@ -27,7 +27,7 @@ When `/claim` succeeds, the Telegraph bot records a SHA-256 hash and visible sna
 
 The claim receipt preserves the terms the contributor accepted, independently of later edits to the Issue body. GitHub comments remain mutable, so the receipt is an audit record rather than a tamper-proof ledger or proof of funding. Before payment, compare it with the independently authorized funding and payout records described in [FUNDED_LAUNCH.md](maintainers/FUNDED_LAUNCH.md).
 
-To change reward terms, release the active claim, update the Issue, and let the contributor decide whether to claim again under the new terms. Existing claims retain their recorded terms.
+To change reward terms, release the active claims, update the Issue, and let each contributor decide whether to claim again under the new terms. Existing claims retain their recorded terms; each claim has its own snapshot.
 
 ## Cross-denomination payouts
 
@@ -50,9 +50,9 @@ If future MACHINA-denominated or IOU-style rewards are introduced, their terms m
 
 ## Multiple independent implementations
 
-The automated workflow deliberately enforces **one claimant and one award per GitHub Issue**.
+Several people can claim and work on the same GitHub Issue. Each claim, submission and approval is recorded per person. The workflow still allows **one award per GitHub Issue** (`max_awards: 1`).
 
-If the network needs N independent Miners, Evaluators, or implementations, create N clearly related **slot Issues** (for example `1/3`, `2/3`, `3/3`) with their own claim state and reward terms.
+If the network needs N independently paid Miners, Evaluators, or implementations, create N clearly related **slot Issues** (for example `1/3`, `2/3`, `3/3`) with their own reward terms.
 
 The bot serializes commands and scheduled releases in a shared Actions queue and
 records accepted transitions before updating labels. Retrying the original job
