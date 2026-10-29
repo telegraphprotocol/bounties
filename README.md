@@ -37,7 +37,7 @@ Miners and Evaluators work **per Intent**, independent of industry. Apps work **
 3. **Claim** it by commenting `/claim`. Several people can claim the same Issue; each claim is tracked on its own.
 4. **Build** the smallest thing that meets the criteria. Post `/progress <update>` at least every 72 hours or your claim is released (other people's claims stay).
 5. **Submit** proof with `/submit <links and evidence>`.
-6. A maintainer reproduces your result, then runs `/approve @you` or returns it with `/changes @you <reason>`. When several people worked on it, a maintainer closes it with `/done`.
+6. A maintainer reproduces your result, then runs `/approve @you` or returns it with `/changes @you <reason>`. When several people worked on it, or the Issue lists more than one box under "Done when", a maintainer ticks each box once it is verified and closes it with `/done`.
 
 A bounty is complete when its acceptance criteria are **reproducibly met**. Protocol eligibility remains a separate network decision. Details: [CONTRIBUTING.md](CONTRIBUTING.md).
 

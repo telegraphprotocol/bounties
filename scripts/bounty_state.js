@@ -18,7 +18,8 @@ const patterns = {
   block: new RegExp(`^<!-- telegraph-block user="(${GH_USER})" at="(${ISO_UTC})" -->$`),
   unblock: new RegExp(`^<!-- telegraph-unblock user="(${GH_USER})" at="(${ISO_UTC})" -->$`),
   // submitter names the one submission accepted; without it (older records) the bounty is done.
-  approve: new RegExp(`^<!-- telegraph-approve user="(${GH_USER})"(?: submitter="(${GH_USER})")? at="(${ISO_UTC})" -->$`),
+  // keep="open" means boxes under "Done when" were still unticked, so the Issue stays open.
+  approve: new RegExp(`^<!-- telegraph-approve user="(${GH_USER})"(?: submitter="(${GH_USER})")?( keep="open")? at="(${ISO_UTC})" -->$`),
   done: new RegExp(`^<!-- telegraph-done user="(${GH_USER})" at="(${ISO_UTC})" -->$`),
   staleWarning: new RegExp(`^<!-- telegraph-stale-warning claimant="(${GH_USER})" claimed_at="(${ISO_UTC})" -->$`),
 };
@@ -63,7 +64,7 @@ function parseTrustedControl(comment) {
     return { type: 'unblock', user: m[1], at: m[2] };
   }
   if ((m = line.match(patterns.approve))) {
-    return { type: 'approve', user: m[1], submitter: m[2] || null, at: m[3] };
+    return { type: 'approve', user: m[1], submitter: m[2] || null, keepOpen: !!m[3], at: m[4] };
   }
   if ((m = line.match(patterns.done))) {
     return { type: 'done', user: m[1], at: m[2] };
@@ -162,7 +163,7 @@ function parseState(comments) {
       claims.delete(k);
       accepted.add(ctl.submitter);
       lastSubmitter = [...pending.values()].at(-1) || null;
-      status = !claims.size && !pending.size ? 'status:done' : settle();
+      status = !ctl.keepOpen && !claims.size && !pending.size ? 'status:done' : settle();
     } else if (ctl.type === 'done') {
       if (accepted.size) status = 'status:done';
     }
@@ -206,6 +207,15 @@ function snapshotReward(issueBody) {
   };
 }
 
+// uncheckedDoneBoxes counts the unticked "- [ ]" boxes under the Issue's "## Done when"
+// heading. A bounty with several parts lists each there, and is complete only when all are ticked.
+function uncheckedDoneBoxes(issueBody) {
+  const body = String(issueBody || '').replace(/\r\n/g, '\n');
+  const match = body.match(/^## Done when\s*\n([\s\S]*?)(?=^##\s|(?![\s\S]))/m);
+  if (!match) return 0;
+  return (match[1].match(/^\s*[-*] \[ \]/gm) || []).length;
+}
+
 function quoteMarkdown(text) {
   return String(text || '').split('\n').map(line => `> ${line}`).join('\n');
 }
@@ -221,6 +231,7 @@ module.exports = {
   isStaleWarningFor,
   extractRewardSection,
   snapshotReward,
+  uncheckedDoneBoxes,
   quoteMarkdown,
   permissionAllowsMaintenance,
   _patterns: patterns,
