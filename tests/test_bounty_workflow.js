@@ -3,6 +3,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 const runCommand = require('../scripts/bounty_commands');
 const { parseState, snapshotReward, TRUSTED_BOT_LOGIN } = require('../scripts/bounty_state');
 
@@ -66,6 +67,7 @@ async function testForgedMarkersIgnored() {
   assert(h.state.issue.labels.includes('status:claimed'), 'legitimate claim should succeed despite forged user marker');
   const parsed = parseState(h.state.comments);
   assert.strictEqual(parsed.claimant, 'alice');
+  assert.deepStrictEqual(parsed.participants, ['alice'], 'forged records must not affect reviewer eligibility');
 }
 
 async function testSecondLineMarkerSmugglingIgnored() {
@@ -196,6 +198,116 @@ async function testReleaseOneClaimKeepsTheOthers() {
   assert(h.state.issue.labels.includes('status:claimed'));
   await h.command('bob', '/release');
   assert(h.state.issue.labels.includes('status:open'));
+}
+
+async function testReleaseWithdrawsOnlyThatPersonsSubmission() {
+  for (const releaser of ['alice', 'reviewer']) {
+    const h = makeHarness({ permissions: { reviewer: 'write' } });
+    await h.command('alice', '/claim');
+    await h.command('bob', '/claim');
+    await h.command('alice', '/submit https://example.com/alice-proof');
+    await h.command('bob', '/submit https://example.com/bob-proof');
+    await h.command(releaser, releaser === 'alice' ? '/release' : '/release @alice');
+    const parsed = parseState(h.state.comments);
+    assert.deepStrictEqual(parsed.claimants.map(c => c.user), ['bob']);
+    assert.deepStrictEqual(parsed.pendingSubmitters, ['bob']);
+    assert.strictEqual(parsed.status, 'status:review');
+    await h.command('reviewer', '/approve @alice');
+    assert(h.state.comments.at(-1).body.includes('no submission waiting for review'));
+    assert.deepStrictEqual(parseState(h.state.comments).accepted, []);
+    await h.command('reviewer', '/approve @bob');
+    assert.deepStrictEqual(parseState(h.state.comments).accepted, ['bob']);
+    assert.strictEqual(h.state.issue.state, 'closed');
+  }
+}
+
+async function testReclaimRequiresANewSubmission() {
+  const h = makeHarness({ permissions: { reviewer: 'write' } });
+  await h.command('alice', '/claim');
+  await h.command('alice', '/submit https://example.com/old-proof');
+  await h.command('alice', '/release');
+  let parsed = parseState(h.state.comments);
+  assert.deepStrictEqual(parsed.pendingSubmitters, []);
+  assert.strictEqual(parsed.lastSubmitter, null);
+  assert(h.state.issue.labels.includes('status:open'));
+  await h.command('reviewer', '/approve');
+  assert.strictEqual(h.state.issue.state, 'open');
+  await h.command('alice', '/claim');
+  await h.command('reviewer', '/approve @alice');
+  parsed = parseState(h.state.comments);
+  assert.deepStrictEqual(parsed.accepted, []);
+  assert.strictEqual(parsed.status, 'status:claimed');
+  await h.command('alice', '/submit https://example.com/new-proof');
+  await h.command('reviewer', '/approve @alice');
+  assert.strictEqual(h.state.issue.state, 'closed');
+}
+
+function testLegacyReleaseClearsPendingReview() {
+  for (const releaser of ['alice', 'reviewer', 'telegraph-bot']) {
+    const h = makeHarness();
+    h.addComment(TRUSTED_BOT_LOGIN, '<!-- telegraph-claim user="alice" at="2026-10-05T00:00:00.000Z" reward_sha256="none" -->');
+    h.addComment(TRUSTED_BOT_LOGIN, '<!-- telegraph-submit user="alice" at="2026-10-05T01:00:00.000Z" -->');
+    h.addComment(TRUSTED_BOT_LOGIN, `<!-- telegraph-release user="${releaser}" at="2026-10-05T02:00:00.000Z" -->`);
+    const parsed = parseState(h.state.comments);
+    assert.deepStrictEqual(parsed.claimants, []);
+    assert.deepStrictEqual(parsed.pendingSubmitters, []);
+    assert.strictEqual(parsed.lastSubmitter, null);
+    assert.strictEqual(parsed.status, 'status:open');
+    assert.deepStrictEqual(parsed.participants, ['alice']);
+  }
+}
+
+async function testFormerContributorsCannotApprove() {
+  for (const outcome of ['released', 'accepted', 'override-changes']) {
+    const h = makeHarness({ permissions: { Alice: 'write', alice: 'write', reviewer: 'write' } });
+    await h.command('bob', '/claim');
+    await h.command('bob', '/submit https://example.com/bob-proof');
+    if (outcome === 'override-changes') {
+      // Maintainer submissions without a claim also make the actor a participant.
+      await h.command('Alice', '/submit https://example.com/override-proof');
+      await h.command('reviewer', '/changes @Alice Please add reproducible evidence.');
+    } else {
+      await h.command('Alice', '/claim');
+      if (outcome === 'accepted') {
+        await h.command('Alice', '/submit https://example.com/alice-proof');
+        await h.command('reviewer', '/approve @Alice');
+      } else {
+        await h.command('Alice', '/release');
+      }
+    }
+    // Eligibility follows the full history and ignores username case.
+    await h.command('alice', '/approve @bob');
+    assert(h.state.comments.at(-1).body.includes('independent maintainer'));
+    const parsed = parseState(h.state.comments);
+    assert.deepStrictEqual(parsed.pendingSubmitters, ['bob']);
+    assert(!parsed.accepted.includes('bob'));
+    assert.strictEqual(h.state.issue.state, 'open');
+    await h.command('reviewer', '/approve @bob');
+    assert.strictEqual(h.state.issue.state, 'closed');
+  }
+}
+
+function testWorkflowDispatchesSupportedCommands() {
+  const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'bounty-commands.yml'), 'utf8');
+  const condition = workflow.match(/    if: >-\n([\s\S]*?)\n    concurrency:/)[1];
+  // These Actions expression functions and operators have the same semantics for
+  // the command strings tested here. Evaluate the actual gate, not a second list.
+  const dispatches = (body, type = 'User', pull_request = null) => vm.runInNewContext(condition, {
+    github: { event: { issue: { pull_request }, comment: { body, user: { type } } } },
+    contains: (items, value) => items.includes(value),
+    fromJSON: JSON.parse,
+    startsWith: (value, prefix) => value.startsWith(prefix),
+  });
+  for (const body of ['/claim', '/release', '/release @alice', '/open', '/unblock', '/approve',
+    '/approve @alice', '/done', '/progress Completed the adapter integration.',
+    '/submit https://example.com/proof', '/changes @alice Please add evidence.', '/block', '/block Waiting on upstream']) {
+    assert.strictEqual(dispatches(body), true, `workflow must dispatch ${body}`);
+    assert.strictEqual(dispatches(body, 'Bot'), false);
+    assert.strictEqual(dispatches(body, 'User', {}), false);
+  }
+  for (const body of ['hello', '/unknown', '/approve-other', '/release-other', '/done-other']) {
+    assert.strictEqual(dispatches(body), false, `workflow must skip ${body}`);
+  }
 }
 
 async function testRewardSnapshotAtClaimTime() {
@@ -490,6 +602,11 @@ async function main() {
     testSeveralPeopleCanClaimAndEachIsApprovedAlone,
     testDoneNeedsAnApprovedPartAndAMaintainer,
     testReleaseOneClaimKeepsTheOthers,
+    testReleaseWithdrawsOnlyThatPersonsSubmission,
+    testReclaimRequiresANewSubmission,
+    testLegacyReleaseClearsPendingReview,
+    testFormerContributorsCannotApprove,
+    testWorkflowDispatchesSupportedCommands,
     testRewardSnapshotAtClaimTime,
     testProviderRecruitmentCannotBeClaimed,
     testProviderRecruitmentCannotBeApprovedByMaintainer,

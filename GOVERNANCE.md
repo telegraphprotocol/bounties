@@ -12,7 +12,7 @@ This repository coordinates public contribution work for Telegraph. Protocol sta
 
 Maintainer commands are authorised by the actor's real repository permission, not by `author_association`. The list of people holding these permissions is the repository's collaborator list.
 
-The approving maintainer must be separate from every claimant and submitter on the Issue. If no
+The approving maintainer must be separate from everyone who has claimed or submitted on the Issue, including contributors whose claims were released or whose submissions were accepted. If no
 independent reviewer is available, the submission remains in review. GitHub approval
 records technical acceptance; payment requires separate funding and treasury approval
 under [the funded-launch controls](docs/maintainers/FUNDED_LAUNCH.md).

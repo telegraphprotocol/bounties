@@ -240,8 +240,8 @@ module.exports = async function runBountyCommand({ github, context }) {
     }
     const target = await reviewTarget('/approve');
     if (!target) return;
-    if (lower(actor) === lower(target) || claimOf(actor) || pendingOf(actor)) {
-      await comment('This submission requires an independent maintainer. Claimants and submitters are ineligible to approve it.');
+    if (state.participants.includes(lower(actor))) {
+      await comment('This submission requires an independent maintainer. Anyone who has claimed or submitted on this Issue is ineligible to approve it, including after release or acceptance.');
       return;
     }
     const othersActive = state.claimants.some(c => lower(c.user) !== lower(target)) ||

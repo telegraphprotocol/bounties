@@ -91,6 +91,7 @@ function parseState(comments) {
   const claims = new Map(); // lower-case login -> { user, claimedAt, lastProgressAt, rewardSha256 }
   const pending = new Map(); // lower-case login -> login, submissions waiting for review
   const accepted = new Set();
+  const participants = new Set(); // lower-case logins; retained after release or acceptance
   let lastSubmitter = null;
   let status = null;
   let blockedStatus = null;
@@ -108,6 +109,7 @@ function parseState(comments) {
 
     if (ctl.type === 'claim') {
       if (claims.has(key(ctl.user))) continue;
+      participants.add(key(ctl.user));
       claims.set(key(ctl.user), {
         user: ctl.user, claimedAt: ctl.at, lastProgressAt: ctl.at,
         rewardSha256: ctl.rewardSha256 === 'none' ? null : ctl.rewardSha256,
@@ -126,9 +128,9 @@ function parseState(comments) {
       lastSubmitter = [...pending.values()].at(-1) || null;
       status = settle();
     } else if (ctl.type === 'release') {
-      const target = ctl.claimant || (claims.has(key(ctl.user)) ? ctl.user : null);
-      if (target) {
-        claims.delete(key(target));
+      if (ctl.claimant) {
+        claims.delete(key(ctl.claimant));
+        pending.delete(key(ctl.claimant));
       } else {
         claims.clear();
         pending.clear();
@@ -136,6 +138,7 @@ function parseState(comments) {
       lastSubmitter = [...pending.values()].at(-1) || null;
       status = settle();
     } else if (ctl.type === 'submit') {
+      participants.add(key(ctl.user));
       pending.set(key(ctl.user), ctl.user);
       lastSubmitter = ctl.user;
       status = 'status:review';
@@ -174,6 +177,7 @@ function parseState(comments) {
     claimants: [...claims.values()],
     pendingSubmitters: [...pending.values()],
     accepted: [...accepted],
+    participants: [...participants],
     lastSubmitter, status, blockedStatus, processedSources,
   };
 }

@@ -31,7 +31,7 @@ Keep your claim active with meaningful progress at least once every 72 hours:
 
 Stale claims are warned, then automatically released, one person at a time. Other people's claims are not affected.
 
-To give up your own claim (a maintainer can release someone else's with `/release @user`):
+To give up your own claim and withdraw its pending submission (a maintainer can release someone else's with `/release @user`):
 
 ```text
 /release
