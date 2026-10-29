@@ -15,7 +15,7 @@ A funded bounty should define:
 | `denomination` | Unit used to state value, e.g. `USD`. |
 | `payout_asset` | Asset actually delivered, e.g. `USDC`, `MACHINA`, or another explicitly stated asset. |
 | `conversion_rule` | Required when `denomination` and `payout_asset` differ; defines exactly how the payout amount is calculated. |
-| `max_awards` | How many accepted parts this Issue can award (a whole number, default `1`). Several people can claim one Issue; each part a maintainer approves is one award. |
+| `max_awards` | **Must be `1` for one GitHub Issue.** Use separate slot Issues when several independent implementations are required. |
 | `eligibility` | Who may participate. |
 | `verification_condition` | What must be reproduced/verified before payout. |
 | `payout_window` | When payout is expected after approval. |
@@ -50,15 +50,15 @@ If future MACHINA-denominated or IOU-style rewards are introduced, their terms m
 
 ## Multiple independent implementations
 
-Several people can claim and work on the same GitHub Issue. Each claim, submission and approval is recorded per person: `/approve @user` accepts one person's part, and `/done` closes the Issue once enough parts are in.
+Several people can claim and work on the same GitHub Issue. Each claim, submission and approval is recorded per person. The workflow still allows **one award per GitHub Issue** (`max_awards: 1`).
 
-This fits work that needs several independent contributors, such as evaluation material (an Intent's pool is only used once at least 5 different people contribute). A funded Issue states `max_awards`; never approve more paid parts than that.
+If the network needs N independently paid Miners, Evaluators, or implementations, create N clearly related **slot Issues** (for example `1/3`, `2/3`, `3/3`) with their own reward terms.
 
 The bot serializes commands and scheduled releases in a shared Actions queue and
 records accepted transitions before updating labels. Retrying the original job
 repairs partial updates while replay protection prevents duplicate acceptance of its
 source comment. This depends on the deployed workflows using that shared queue;
-GitHub API updates are separate operations.
+GitHub API updates are separate operations. Use one slot Issue per award.
 
 ## Payout state
 

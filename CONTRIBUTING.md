@@ -21,7 +21,7 @@ Comment:
 /claim
 ```
 
-The bot records your claim and moves the issue to `status:claimed`. Several people can claim the same Issue; you can join while it is `status:open`, `status:claimed` or `status:review`. Each claim has its own record, progress window and reward snapshot.
+The bot records your claim and moves the issue to `status:claimed`. Several people can claim the same Issue, while it is `status:open`, `status:claimed` or `status:review`. Each claim has its own record, progress window and reward snapshot.
 
 Keep your claim active with meaningful progress at least once every 72 hours:
 
@@ -31,13 +31,11 @@ Keep your claim active with meaningful progress at least once every 72 hours:
 
 Stale claims are warned, then automatically released, one person at a time. Other people's claims are not affected.
 
-To give up your own claim:
+To give up your own claim (a maintainer can release someone else's with `/release @user`):
 
 ```text
 /release
 ```
-
-A maintainer can release someone else's claim with `/release @user`.
 
 ## 3. Build against the acceptance criteria
 
@@ -67,10 +65,9 @@ The issue moves to `status:review`.
 
 A maintainer reproduces the acceptance criteria.
 
-- Pass: `/approve @user` accepts that person's part. With one submission waiting, `/approve` alone is enough. If nobody else is still working on it, the Issue is complete.
+- Pass: `/approve @user` accepts that person's part (with one submission waiting, `/approve` alone is enough). If nobody else is still working on it, the Issue is complete; otherwise a maintainer closes it with `/done`.
 - Needs changes: `/changes @user <reason>`; that person is back to `status:claimed` with a fresh 72-hour progress window.
-- Cannot continue: `/release` (or a maintainer's `/release @user`).
-- Finished: once enough parts are approved, a maintainer closes the Issue with `/done`.
+- Cannot continue: `/release`
 
 Funded rewards follow the terms recorded when the active claim was created. The bot stores a visible snapshot and hash of the Issue's `## Reward` section at `/claim` time; payout also requires independent funding authorization.
 
@@ -103,7 +100,7 @@ This repository expects focused, verifiable contributions:
 - claim only work you can actively execute;
 - run and inspect generated code before submission;
 - provide authentic request IDs, transactions, benchmarks and screenshots;
-- work only on the Intents an Issue names; H2 bounties use the catalogue's mandatory Intents, and nobody proposes a new Intent through a bounty;
+- propose a new Intent only for a reusable intelligence primitive;
 - report exploitable vulnerabilities through the private security channel.
 
 Repeated low-signal behavior may be closed without review.

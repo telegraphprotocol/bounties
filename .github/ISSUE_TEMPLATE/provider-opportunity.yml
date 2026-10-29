@@ -12,7 +12,7 @@ body:
     id: capability
     attributes:
       label: Service type or existing Intent
-      description: State the broad task and the existing catalogue Intent it fits, if any. New Intents are not proposed through this board.
+      description: State the broad task and any known public Intent. Propose a new Intent only when the task itself is a reusable intelligence primitive.
     validations:
       required: true
   - type: textarea

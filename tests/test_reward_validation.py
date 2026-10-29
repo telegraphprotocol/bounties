@@ -21,12 +21,10 @@ def expect_fail(item, needle):
     raise AssertionError(f'expected validation failure containing {needle!r}')
 
 
-# Several people can claim one Issue; max_awards is how many accepted parts it can award.
+# One claim/award per Issue is enforced at schema level.
 item = copy.deepcopy(base)
-item['reward']['max_awards'] = 0
-expect_fail(item, 'must be >= 1')
-item['reward']['max_awards'] = 3
-validate_seed_item(item, schema)
+item['reward']['max_awards'] = 2
+expect_fail(item, 'must equal 1')
 
 # Cross-denomination funded rewards require an explicit conversion rule.
 item = copy.deepcopy(base)
@@ -46,4 +44,4 @@ expect_fail(item, 'required when denomination differs from payout_asset')
 item['reward']['conversion_rule'] = 'MACHINA amount uses the 24h Ethereum TWAP at approval, rounded down to 8 decimals.'
 validate_seed_item(item, schema)
 
-print('REWARD VALIDATION TESTS OK: 4')
+print('REWARD VALIDATION TESTS OK: 3')

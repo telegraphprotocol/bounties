@@ -18,7 +18,7 @@ This repository is designed to be readable by humans **and agents**.
 4. Do not invent acceptance evidence.
 5. Do not disclose security-sensitive information publicly.
 6. Do not auto-claim multiple bounties unless a human operator can actually execute them.
-7. Never propose or add a new Intent through a bounty. H2 bounties use the catalogue's mandatory Intents only (`catalog/intents.json`, `"tier": "mandatory"`); work only on the Intent an Issue names. A mission output or a new Provider/model version is never a new Intent.
+7. A mission output or new Provider/model version is not automatically a new Intent. Prefer reusable intelligence primitives.
 8. For `source:release` work, cite the canonical release source and never require a predetermined rank.
 9. Do not invent customer demand, private commitments, provider endorsement, or usage to justify a public bounty.
 10. For evaluation work, group compatible Intents by Category + adapter + task requirement profile; do not open one GitHub issue per Intent. Keep hidden qualification material secret.

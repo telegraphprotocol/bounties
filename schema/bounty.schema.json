@@ -109,9 +109,8 @@
           ]
         },
         "max_awards": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "How many accepted parts this Issue can award. Several people can claim one Issue; each part a maintainer approves is one award. Default 1."
+          "const": 1,
+          "description": "One claim/award per GitHub Issue. Use separate slot Issues for multiple independent implementations."
         },
         "eligibility": {
           "type": [
