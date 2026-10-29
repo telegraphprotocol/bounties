@@ -36,7 +36,7 @@ and private job execution each require authorization in their own systems.
 - Verify wallet ownership through an authenticated process bound to claimant,
   bounty and network. Use expiry and replay prevention for signed challenges.
   Re-verify address changes independently through the authenticated process.
-- Enforce one award per issue and a unique payout ID. Reserve approved funds,
+- Never pay more approved parts than the Issue's `max_awards`, and give each a unique payout ID. Reserve approved funds,
   reconcile pending transactions before retrying and record transaction confirmation
   and appropriate finality. Preserve paid status across reopening and reclaiming.
 - Approve per-bounty and aggregate limits before a small, manually reviewed pilot.

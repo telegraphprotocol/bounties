@@ -69,7 +69,7 @@ async function testTrustedRecentProgressKeepsClaim() {
 async function main() {
   const tests = [testForgedProgressDoesNotKeepStaleClaimAlive, testTrustedRecentProgressKeepsClaim,
     testQueuedProgressPreventsRelease, testReleaseFailurePreservesClaim, testScheduledRecoveryRepairsLabels,
-    testFreshProgressOnSecondReadPreventsRelease, testClosedOrReviewIssuesAreNotReleased];
+    testFreshProgressOnSecondReadPreventsRelease, testClosedOrReviewIssuesAreNotReleased, testOnlyTheIdleClaimantIsReleased];
   for (const test of tests) {
     await test();
     console.log(`PASS ${test.name}`);
@@ -139,6 +139,25 @@ async function testClosedOrReviewIssuesAreNotReleased() {
     assert.strictEqual(parseState(h.state.comments).claimant, 'alice');
     assert(!h.state.comments.some(c => c.body.startsWith('<!-- telegraph-release')));
   }
+}
+
+async function testOnlyTheIdleClaimantIsReleased() {
+  const now = new Date().toISOString();
+  const h = makeHarness([
+    { user: { login: TRUSTED_BOT_LOGIN }, created_at: '2020-01-01T00:00:00.000Z',
+      body: '<!-- telegraph-claim user="alice" at="2020-01-01T00:00:00.000Z" reward_sha256="none" -->\nClaimed.' },
+    { user: { login: TRUSTED_BOT_LOGIN }, created_at: now,
+      body: `<!-- telegraph-claim user="bob" at="${now}" reward_sha256="none" -->\nClaimed.` },
+  ]);
+  await runStaleClaims(h);
+  const st = parseState(h.state.comments);
+  assert.deepStrictEqual(st.claimants.map(c => c.user), ['bob']);
+  assert(h.state.issue.labels.includes('status:claimed'));
+  assert(h.state.comments.some(c => c.body.includes("@alice's claim was automatically released") && c.body.includes('The others keep theirs')));
+  // Running again changes nothing.
+  const n = h.state.comments.length;
+  await runStaleClaims(h);
+  assert.strictEqual(h.state.comments.length, n);
 }
 
 main().catch(err => {

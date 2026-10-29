@@ -55,8 +55,9 @@ for item in seed:
     assert item.get('acceptance'), f"Missing acceptance criteria: {item.get('title')}"
     reward = item.get('reward') or {}
     assert 'funded' in reward, f"Missing reward.funded: {item.get('title')}"
-    assert reward.get('max_awards', 1) == 1, (
-        f"One claim/award per Issue is enforced; use separate slot Issues for multiple implementations: {item['title']}"
+    max_awards = reward.get('max_awards', 1)
+    assert isinstance(max_awards, int) and not isinstance(max_awards, bool) and max_awards >= 1, (
+        f"reward.max_awards must be a whole number of at least 1: {item['title']}"
     )
     if reward['funded']:
         for field in ['amount', 'denomination', 'payout_asset', 'eligibility', 'verification_condition', 'payout_window']:

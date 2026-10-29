@@ -34,10 +34,12 @@ Miners and Evaluators work **per Intent**, independent of industry. Apps work **
 
 1. **Pick** an Issue labelled `status:open`.
 2. **Read** the acceptance criteria and the `## Reward` section before writing code.
-3. **Claim** it by commenting `/claim`. One claimant per Issue.
-4. **Build** the smallest thing that meets the criteria. Post `/progress <update>` at least every 72 hours or the claim is released.
+3. **Claim** it by commenting `/claim`. Several people can claim the same Issue and work on it at once; each claim is tracked on its own.
+4. **Build** the smallest thing that meets the criteria. Post `/progress <update>` at least every 72 hours or your claim is released (other people's claims stay).
 5. **Submit** proof with `/submit <links and evidence>`.
-6. A maintainer reproduces your result, then runs `/approve` or returns it with `/changes <reason>`.
+6. A maintainer reproduces your result, then accepts your part with `/approve @you` or returns it with `/changes @you <reason>`. When enough parts are in, a maintainer closes the Issue with `/done`.
+
+**Intents:** H2 bounties use the **mandatory Intents** of the catalogue only (`catalog/intents.json`, `"tier": "mandatory"`). Nobody proposes or adds a new Intent through a bounty. Mandatory-Intent bounties ask for evaluation material and evaluator adapters, and the work happens in [Anjoman](https://anjoman.ai/dashboard/eval) ([docs](https://anjoman.ai/docs)).
 
 A bounty is complete when its acceptance criteria are **reproducibly met**. Protocol eligibility remains a separate network decision. Details: [CONTRIBUTING.md](CONTRIBUTING.md).
 

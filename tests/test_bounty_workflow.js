@@ -133,13 +133,69 @@ async function testChangesReturnsToSameClaimant() {
   assert(last.body.includes('Changes requested'));
 }
 
-async function testSequentialClaimCollisionRejected() {
-  const h = makeHarness();
+async function testSeveralPeopleCanClaimAndEachIsApprovedAlone() {
+  const h = makeHarness({ permissions: { reviewer: 'write' } });
   await h.command('alice', '/claim');
   await h.command('bob', '/claim');
-  const parsed = parseState(h.state.comments);
+  let parsed = parseState(h.state.comments);
+  assert.deepStrictEqual(parsed.claimants.map(c => c.user), ['alice', 'bob']);
   assert.strictEqual(parsed.claimant, 'alice');
-  assert(h.state.comments.some(c => c.body.includes('not currently open for claiming')));
+  assert(h.state.issue.labels.includes('status:claimed'));
+  assert(h.state.comments.at(-1).body.includes('Also working on it: @alice'));
+  await h.command('bob', '/claim');
+  assert(h.state.comments.at(-1).body.includes('already claimed'));
+  assert.strictEqual(parseState(h.state.comments).claimants.length, 2);
+
+  // Alice submits; Bob can still join in review and keeps working.
+  await h.command('alice', '/submit https://example.com/alice-evidence rows');
+  assert(h.state.issue.labels.includes('status:review'));
+  await h.command('carol', '/claim');
+  assert.strictEqual(parseState(h.state.comments).claimants.length, 3);
+  // Accepting Alice's part leaves the bounty open for Bob and Carol.
+  await h.command('reviewer', '/approve');
+  parsed = parseState(h.state.comments);
+  assert.deepStrictEqual(parsed.accepted, ['alice']);
+  assert.deepStrictEqual(parsed.claimants.map(c => c.user), ['bob', 'carol']);
+  assert(h.state.issue.labels.includes('status:claimed'));
+  assert.strictEqual(h.state.issue.state, 'open');
+  // Two submissions waiting: a review must name one.
+  await h.command('bob', '/submit https://example.com/bob-evidence rows');
+  await h.command('carol', '/submit https://example.com/carol-evidence rows');
+  await h.command('reviewer', '/approve');
+  assert(h.state.comments.at(-1).body.includes('Name one'));
+  await h.command('reviewer', '/changes @carol please add the source links to each row');
+  assert.deepStrictEqual(parseState(h.state.comments).pendingSubmitters, ['bob']);
+  await h.command('reviewer', '/approve @bob');
+  assert(h.state.issue.labels.includes('status:claimed'), 'Carol is still working');
+  // A maintainer closes it once enough parts are in.
+  await h.command('reviewer', '/done');
+  assert.strictEqual(h.state.issue.state, 'closed');
+  assert(h.state.issue.labels.includes('status:done'));
+}
+
+async function testDoneNeedsAnApprovedPartAndAMaintainer() {
+  const h = makeHarness({ permissions: { reviewer: 'write' } });
+  await h.command('alice', '/claim');
+  await h.command('reviewer', '/done');
+  assert.strictEqual(h.state.issue.state, 'open');
+  assert(h.state.comments.at(-1).body.includes('at least one approved submission'));
+  await h.command('alice', '/done');
+  assert.strictEqual(h.state.issue.state, 'open');
+}
+
+async function testReleaseOneClaimKeepsTheOthers() {
+  const h = makeHarness({ permissions: { maintainer: 'write' } });
+  await h.command('alice', '/claim');
+  await h.command('bob', '/claim');
+  await h.command('bob', '/release @alice');
+  assert.strictEqual(parseState(h.state.comments).claimants.length, 2, 'a claimant cannot release someone else');
+  await h.command('maintainer', '/release');
+  assert(h.state.comments.at(-1).body.includes('/release @user'));
+  await h.command('maintainer', '/release @alice');
+  assert.deepStrictEqual(parseState(h.state.comments).claimants.map(c => c.user), ['bob']);
+  assert(h.state.issue.labels.includes('status:claimed'));
+  await h.command('bob', '/release');
+  assert(h.state.issue.labels.includes('status:open'));
 }
 
 async function testRewardSnapshotAtClaimTime() {
@@ -212,7 +268,7 @@ async function testProgressRejectedForNonClaimantAndShortText() {
   await h.command('alice', '/claim');
   const before = h.state.comments.length;
   await h.command('mallory', '/progress working on it for sure');
-  assert(h.state.comments.at(-1).body.includes('Only the current claimant'));
+  assert(h.state.comments.at(-1).body.includes('Only a current claimant'));
   await h.command('alice', '/progress ok');
   assert(h.state.comments.at(-1).body.includes('at least 15 characters'));
   assert(!h.state.comments.slice(before).some(c => c.body.startsWith('<!-- telegraph-progress')));
@@ -411,9 +467,11 @@ async function testConflictingLabelsFailClosed() {
 }
 
 async function testRejectedClaimCannotBeReplayedAfterRelease() {
-  const h = makeHarness();
+  const h = makeHarness({ permissions: { maintainer: 'write' } });
   await h.command('alice', '/claim');
+  await h.command('maintainer', '/block waiting on upstream data');
   const rejected = await h.command('bob', '/claim');
+  await h.command('maintainer', '/unblock');
   await h.command('alice', '/release');
   await h.command('bob', '/claim', rejected);
   assert.strictEqual(parseState(h.state.comments).claimant, null);
@@ -429,7 +487,9 @@ async function main() {
     testOpenBountySubmitHijackRejected,
     testClaimantCanSubmit,
     testChangesReturnsToSameClaimant,
-    testSequentialClaimCollisionRejected,
+    testSeveralPeopleCanClaimAndEachIsApprovedAlone,
+    testDoneNeedsAnApprovedPartAndAMaintainer,
+    testReleaseOneClaimKeepsTheOthers,
     testRewardSnapshotAtClaimTime,
     testProviderRecruitmentCannotBeClaimed,
     testProviderRecruitmentCannotBeApprovedByMaintainer,

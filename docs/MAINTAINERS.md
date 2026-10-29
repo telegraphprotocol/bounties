@@ -90,13 +90,13 @@ commands and rerun the original workflow after an API failure. Scheduled
 reconciliation repairs open Issues. Preserve command receipts. All mutating
 workflows must retain the shared `bounty-state` concurrency group.
 
-- `/claim` starts one exclusive claim for that Issue. The workflow intentionally supports one claimant/award per Issue.
-- `/progress ...` resets the stale-claim timer.
-- A warning is posted after 48 hours without progress.
-- The claim is released after 72 hours without progress.
-- Maintainers can release stale/invalid claims.
-
-For supply or evaluation bounties needing N independent implementations, create separate slot Issues (for example `1/3`, `2/3`, `3/3`), each with one active claim.
+- `/claim` adds the commenter's claim. Several people can hold claims on one Issue at once; each has its own reward snapshot.
+- `/progress ...` resets that person's stale-claim timer.
+- A warning is posted after 48 hours without progress, per person.
+- That person's claim is released after 72 hours without progress; the others keep theirs. Someone whose submission is waiting for review is never released.
+- Maintainers can release a stale or invalid claim with `/release @user`.
+- `/approve @user` and `/changes @user <reason>` act on one person's submission (the name can be left out when only one is waiting). Approvers must be independent of every claimant and submitter on the Issue.
+- `/done` closes the Issue as complete once at least one part is approved.
 
 ## Review
 

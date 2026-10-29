@@ -8,6 +8,8 @@ This repository coordinates **public Category-level evaluation contributions** f
 
 **Public after projection and manual approval:** A broadly published Category name, a general request for compatible evaluation methods or material, a stable *keyed opaque identifier*, and `triage`/`unfunded` status. The public Issue omits the underlying trigger. Multiple internal findings in one Category collapse into **one** broad, review-only opportunity. More precise scopes require authorized private coordination or specifications approved for publication.
 
+**Mandatory-Intent bounties (H2).** For the catalogue's mandatory Intents, Telegraph publishes one Issue per Intent family naming its exact Intents and saying whether it still needs evaluation material, an evaluator adapter, or both, with how many contributors its pool has so far. The node already shows these facts on its public endpoints. These Issues never include material content, failure reasons, test selection, internal URLs or contract addresses, and they send contributors to [Anjoman](https://anjoman.ai/dashboard/eval). Everything else on this page still applies.
+
 The publisher rejects legacy records containing exact gap types, sampled Intent IDs, URLs, thresholds or source counts. If it detects an older generated Issue in that format, it stops for maintainer review and possible redaction. Edits to a public Issue cannot remove copies already present in forks, notifications or caches.
 
 Information available from V2's public chain or another public API remains reconstructable. This repository limits additional disclosure. The protocol team reviews data before storing or emitting it publicly.

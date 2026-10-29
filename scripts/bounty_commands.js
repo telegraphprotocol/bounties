@@ -7,7 +7,8 @@ const {
   permissionAllowsMaintenance,
 } = require('./bounty_state');
 const { STATUS_LABELS, reconcileIssue, recordTransition } = require('./bounty_journal');
-const COMMANDS = new Set(['/claim', '/progress', '/release', '/submit', '/open', '/block', '/unblock', '/changes', '/approve']);
+const COMMANDS = new Set(['/claim', '/progress', '/release', '/submit', '/open', '/block', '/unblock', '/changes', '/approve', '/done']);
+const MENTION = /^@([A-Za-z0-9][A-Za-z0-9-]{0,38})$/;
 
 module.exports = async function runBountyCommand({ github, context }) {
   const event = context.payload.comment;
@@ -70,18 +71,27 @@ module.exports = async function runBountyCommand({ github, context }) {
 
   // Provider recruitment follows a separate commercial process, so bounty commands are unavailable.
   if (labelNames().includes('opportunity:provider') &&
-      ['/claim', '/progress', '/release', '/submit', '/changes', '/approve'].includes(command)) {
+      ['/claim', '/progress', '/release', '/submit', '/changes', '/approve', '/done'].includes(command)) {
     await comment('This is a commercial Provider onboarding opportunity. Follow its public contact instructions; onboarding and any terms are coordinated through the separate commercial process.');
     return;
   }
 
+  const lower = user => String(user || '').toLowerCase();
+  const claimOf = user => state.claimants.find(c => lower(c.user) === lower(user));
+  const pendingOf = user => state.pendingSubmitters.find(u => lower(u) === lower(user));
+  // "/cmd @user rest": the named user (if any) and the rest of the text.
+  const [firstWord, ...restWords] = payload.split(/\s+/);
+  const named = MENTION.test(firstWord || '') ? firstWord.slice(1) : null;
+  const reason = named ? restWords.join(' ').trim() : payload;
+
   if (command === '/claim') {
-    if (!labelNames().includes('status:open')) {
-      await comment('This Issue is not currently open for claiming. Only `status:open` bounties can be claimed.');
+    // Several people can work on one bounty: anyone can join while it is open, claimed or in review.
+    if (!['status:open', 'status:claimed', 'status:review'].includes(statuses[0])) {
+      await comment('This Issue is not currently open for claiming. Only `status:open` bounties, or ones others are already working on, can be claimed.');
       return;
     }
-    if (state.claimant) {
-      await comment(`Already claimed by @${state.claimant}. If the claim is stale, a maintainer can release it.`);
+    if (claimOf(actor)) {
+      await comment(`@${actor}, you have already claimed this bounty. Post \`/progress ...\` to keep your claim.`);
       return;
     }
 
@@ -94,22 +104,24 @@ module.exports = async function runBountyCommand({ github, context }) {
     const rewardText = reward.text
       ? `\n\n**Reward terms recorded for this claim** (SHA-256 \`${rewardHash}\`):\n${quoteMarkdown(reward.text)}`
       : '\n\n**Reward terms recorded for this claim:** the Issue had no explicit `## Reward` section at claim time.';
+    const others = state.claimants.map(c => `@${c.user}`);
+    const together = others.length ? ` Also working on it: ${others.join(', ')}.` : '';
 
     await transition(
       `<!-- telegraph-claim user="${actor}" at="${now}" reward_sha256="${rewardHash}" -->\n` +
-      `Claimed by @${actor}. Post a meaningful \`/progress ...\` update within **72 hours** or the claim will be released automatically.` +
+      `Claimed by @${actor}.${together} Post a meaningful \`/progress ...\` update within **72 hours** or your claim will be released automatically.` +
       rewardText
     );
     return;
   }
 
   if (command === '/progress') {
-    if (!state.claimant || state.claimant.toLowerCase() !== actor.toLowerCase()) {
-      await comment('Only the current claimant can post a bounty progress command.');
+    if (!claimOf(actor)) {
+      await comment('Only a current claimant can post a bounty progress command. Comment `/claim` first.');
       return;
     }
-    if (!labelNames().includes('status:claimed')) {
-      await comment('Progress can only be recorded while the bounty is in `status:claimed`.');
+    if (!['status:claimed', 'status:review'].includes(statuses[0])) {
+      await comment('Progress can only be recorded while the bounty is claimed or in review.');
       return;
     }
     if (payload.length < 15) {
@@ -121,34 +133,42 @@ module.exports = async function runBountyCommand({ github, context }) {
   }
 
   if (command === '/release') {
-    if (!state.claimant) {
+    if (!state.claimants.length) {
       await comment('There is no active claim to release.');
       return;
     }
     const maintainer = await isMaintainer();
-    if (state.claimant.toLowerCase() !== actor.toLowerCase() && !maintainer) {
-      await comment(`Only @${state.claimant} or a maintainer can release this claim.`);
+    let target = named ? claimOf(named) : claimOf(actor);
+    if (!target && !named && maintainer && state.claimants.length === 1) target = state.claimants[0];
+    if (!target) {
+      await comment(named ? `@${named} has no active claim on this bounty.`
+        : maintainer ? 'Several people hold this bounty. Name the claim to release: `/release @user`.'
+          : `Only a claimant or a maintainer can release a claim.`);
       return;
     }
-    await transition(`<!-- telegraph-release user="${actor}" at="${now}" -->\nClaim released by @${actor}. This bounty is open again.`);
+    if (lower(target.user) !== lower(actor) && !maintainer) {
+      await comment(`Only @${target.user} or a maintainer can release this claim.`);
+      return;
+    }
+    const left = state.claimants.length - 1;
+    await transition(`<!-- telegraph-release user="${actor}" claimant="${target.user}" at="${now}" -->\n` +
+      `@${target.user}'s claim was released by @${actor}.` + (left ? ' The others keep theirs.' : ' This bounty is open again.'));
     return;
   }
 
   if (command === '/submit') {
     const maintainer = await isMaintainer();
-    const isClaimant = !!state.claimant && state.claimant.toLowerCase() === actor.toLowerCase();
+    const isClaimant = !!claimOf(actor);
 
     if (!maintainer) {
-      if (!labelNames().includes('status:claimed') || !isClaimant) {
-        if (state.claimant) {
-          await comment(`Only the current claimant @${state.claimant} can submit this bounty.`);
-        } else {
-          await comment('This bounty must be claimed before it can be submitted. Comment `/claim` first.');
-        }
+      if (!['status:claimed', 'status:review'].includes(statuses[0]) || !isClaimant) {
+        await comment(state.claimants.length
+          ? 'Only someone who has claimed this bounty can submit. Comment `/claim` first.'
+          : 'This bounty must be claimed before it can be submitted. Comment `/claim` first.');
         return;
       }
-    } else if (!labelNames().includes('status:claimed') && !labelNames().includes('status:open')) {
-      await comment('Maintainer `/submit` override is only valid from `status:claimed` or `status:open`.');
+    } else if (!['status:claimed', 'status:open', 'status:review'].includes(statuses[0])) {
+      await comment('Maintainer `/submit` override is only valid from `status:claimed`, `status:open` or `status:review`.');
       return;
     }
 
@@ -182,23 +202,32 @@ module.exports = async function runBountyCommand({ github, context }) {
     return;
   }
 
+  // A review names the submission it is about; with one submission waiting it is that one.
+  const reviewTarget = async verb => {
+    const target = named ? pendingOf(named) : state.pendingSubmitters.length === 1 ? state.pendingSubmitters[0] : null;
+    if (!target) {
+      await comment(named ? `@${named} has no submission waiting for review.`
+        : state.pendingSubmitters.length ? `Several submissions are waiting. Name one: \`${verb} @user\`.`
+          : 'A recorded submission is required before approval.');
+    }
+    return target;
+  };
+
   if (command === '/changes') {
     if (!(await isMaintainer())) return;
     if (!labelNames().includes('status:review')) {
       await comment('`/changes` is only valid while the bounty is in `status:review`.');
       return;
     }
-    if (!state.claimant) {
-      await comment('Cannot request changes because this review has no active claimant to return the bounty to.');
-      return;
-    }
-    if (payload.length < 10) {
+    const target = await reviewTarget('/changes');
+    if (!target) return;
+    if (reason.length < 10) {
       await comment('Please include a clear reason after `/changes` (at least 10 characters).');
       return;
     }
     await transition(
-      `<!-- telegraph-changes user="${actor}" claimant="${state.claimant}" at="${now}" -->\n` +
-      `Changes requested by @${actor}. Returned to @${state.claimant} as **claimed**; the 72-hour progress window restarts now.\n\n${payload}`
+      `<!-- telegraph-changes user="${actor}" claimant="${target}" at="${now}" -->\n` +
+      `Changes requested by @${actor}. Returned to @${target} as **claimed**; the 72-hour progress window restarts now.\n\n${reason}`
     );
     return;
   }
@@ -209,15 +238,27 @@ module.exports = async function runBountyCommand({ github, context }) {
       await comment('`/approve` is only valid while the bounty is in `status:review`.');
       return;
     }
-    if (!state.lastSubmitter) {
-      await comment('A recorded submission is required before approval.');
+    const target = await reviewTarget('/approve');
+    if (!target) return;
+    if (lower(actor) === lower(target) || claimOf(actor) || pendingOf(actor)) {
+      await comment('This submission requires an independent maintainer. Claimants and submitters are ineligible to approve it.');
       return;
     }
-    if ([state.claimant, state.lastSubmitter].some(user => user?.toLowerCase() === actor.toLowerCase())) {
-      await comment('This submission requires an independent maintainer. The claimant and submitter are ineligible to approve it.');
-      return;
-    }
-    await transition(`<!-- telegraph-approve user="${actor}" at="${now}" -->\nVerified and approved by @${actor}. Bounty complete. Payment, when applicable, follows the separate funding and treasury process.`);
+    const othersActive = state.claimants.some(c => lower(c.user) !== lower(target)) ||
+      state.pendingSubmitters.some(u => lower(u) !== lower(target));
+    await transition(`<!-- telegraph-approve user="${actor}" submitter="${target}" at="${now}" -->\n` + (othersActive
+      ? `@${target}'s part is verified and accepted by @${actor}. The bounty stays open for the others. A maintainer closes it with \`/done\`.`
+      : `Verified and approved by @${actor}. Bounty complete. Payment, when applicable, follows the separate funding and treasury process.`));
     return;
+  }
+
+  if (command === '/done') {
+    if (!(await isMaintainer())) return;
+    if (!state.accepted.length) {
+      await comment('`/done` needs at least one approved submission first.');
+      return;
+    }
+    await transition(`<!-- telegraph-done user="${actor}" at="${now}" -->\nClosed as complete by @${actor}. Accepted: ${state.accepted.map(u => '@' + u).join(', ')}. ` +
+      'Payment, when applicable, follows the separate funding and treasury process.');
   }
 };

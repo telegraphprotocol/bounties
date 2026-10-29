@@ -40,7 +40,7 @@ for item in DATA:
                  f"- Amount: **{reward['amount']} {reward['denomination']}**\n"+
                  f"- Payout asset: **{reward['payout_asset']}**\n"+
                  (f"- Conversion rule: {conversion}\n" if conversion else "")+
-                 "- Max awards: **1** (one claimant/award per Issue; create separate slot Issues for additional independent implementations)\n"+
+                 f"- Max awards: **{reward.get('max_awards', 1)}** (several people can claim; each part a maintainer approves is one award)\n"+
                  f"- Eligibility: {reward['eligibility']}\n"+
                  f"- Verification: {reward['verification_condition']}\n"+
                  f"- Payout window: {reward['payout_window']}\n"+

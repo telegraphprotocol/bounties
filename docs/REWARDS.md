@@ -15,7 +15,7 @@ A funded bounty should define:
 | `denomination` | Unit used to state value, e.g. `USD`. |
 | `payout_asset` | Asset actually delivered, e.g. `USDC`, `MACHINA`, or another explicitly stated asset. |
 | `conversion_rule` | Required when `denomination` and `payout_asset` differ; defines exactly how the payout amount is calculated. |
-| `max_awards` | **Must be `1` for one GitHub Issue.** Use separate slot Issues when several independent implementations are required. |
+| `max_awards` | How many accepted parts this Issue can award (a whole number, default `1`). Several people can claim one Issue; each part a maintainer approves is one award. |
 | `eligibility` | Who may participate. |
 | `verification_condition` | What must be reproduced/verified before payout. |
 | `payout_window` | When payout is expected after approval. |
@@ -27,7 +27,7 @@ When `/claim` succeeds, the Telegraph bot records a SHA-256 hash and visible sna
 
 The claim receipt preserves the terms the contributor accepted, independently of later edits to the Issue body. GitHub comments remain mutable, so the receipt is an audit record rather than a tamper-proof ledger or proof of funding. Before payment, compare it with the independently authorized funding and payout records described in [FUNDED_LAUNCH.md](maintainers/FUNDED_LAUNCH.md).
 
-To change reward terms, release the active claim, update the Issue, and let the contributor decide whether to claim again under the new terms. Existing claims retain their recorded terms.
+To change reward terms, release the active claims, update the Issue, and let each contributor decide whether to claim again under the new terms. Existing claims retain their recorded terms; each claim has its own snapshot.
 
 ## Cross-denomination payouts
 
@@ -50,15 +50,15 @@ If future MACHINA-denominated or IOU-style rewards are introduced, their terms m
 
 ## Multiple independent implementations
 
-The automated workflow deliberately enforces **one claimant and one award per GitHub Issue**.
+Several people can claim and work on the same GitHub Issue. Each claim, submission and approval is recorded per person: `/approve @user` accepts one person's part, and `/done` closes the Issue once enough parts are in.
 
-If the network needs N independent Miners, Evaluators, or implementations, create N clearly related **slot Issues** (for example `1/3`, `2/3`, `3/3`) with their own claim state and reward terms.
+This fits work that needs several independent contributors, such as evaluation material (an Intent's pool is only used once at least 5 different people contribute). A funded Issue states `max_awards`; never approve more paid parts than that.
 
 The bot serializes commands and scheduled releases in a shared Actions queue and
 records accepted transitions before updating labels. Retrying the original job
 repairs partial updates while replay protection prevents duplicate acceptance of its
 source comment. This depends on the deployed workflows using that shared queue;
-GitHub API updates are separate operations. Use one slot Issue per award.
+GitHub API updates are separate operations.
 
 ## Payout state
 
