@@ -12,6 +12,8 @@ Each Issue states its reward status. **At launch, every bounty is unfunded.** Fu
 
 This repository contains the public contribution board and its tooling. Report vulnerabilities through the private channel in [SECURITY.md](SECURITY.md).
 
+## **All Bounties will be submitted through [Anjoman](https://anjoman.ai/).**
+
 ---
 
 ## What can be built
