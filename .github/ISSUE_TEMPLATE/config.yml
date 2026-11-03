@@ -4,5 +4,5 @@ contact_links:
     url: https://telegraphprotocol.com/
     about: Report privately to info@telegraphprotocol.com with subject "[SECURITY] Telegraph vulnerability report"; see SECURITY.md.
   - name: General Telegraph docs
-    url: https://docs.telegraphprotocol.com/
+    url: https://anjoman.ai/docs
     about: Protocol documentation and integration references.
