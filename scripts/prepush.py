@@ -63,6 +63,7 @@ required = [
     '.github/ISSUE_TEMPLATE/capability-demand.yml',
     '.github/ISSUE_TEMPLATE/provider-opportunity.yml',
     '.github/ISSUE_TEMPLATE/evaluation-material-gap.yml',
+    'scripts/sync_catalog.py',
     'scripts/evaluation_opportunities.py',
     'scripts/evaluation_publication.py',
     'scripts/sync_evaluation_issues.py',

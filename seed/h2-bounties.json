@@ -34,39 +34,6 @@
   },
   {
     "publish": false,
-    "title": "[H2][Evaluator] Strengthen evaluation for SATELLITE_IMAGERY_ANALYSIS",
-    "work_type": "evaluator",
-    "gap_type": "evaluation",
-    "priority": "p0",
-    "intent": "SATELLITE_IMAGERY_ANALYSIS",
-    "missions": [
-      "conflict-intelligence",
-      "resources-agriculture",
-      "autonomous-systems"
-    ],
-    "why": "Publish only if the current evaluation path cannot meaningfully separate useful from weak satellite-analysis Miners for the relevant H2 workloads.",
-    "current_state": "VERIFY LIVE EVALUATION AND RANKING BEFORE PUBLISHING.",
-    "acceptance": [
-      "Evaluator runs on the approved reference fixtures",
-      "Known weak outputs score below reference-quality outputs on hidden checks",
-      "Evaluator is integrated into the ranking path used by Apps",
-      "Evaluation limitations are documented rather than overstated"
-    ],
-    "good_first_bounty": false,
-    "reward": {
-      "funded": false,
-      "amount": null,
-      "denomination": null,
-      "payout_asset": null,
-      "max_awards": 1,
-      "eligibility": null,
-      "verification_condition": null,
-      "payout_window": null,
-      "payout_proof": null
-    }
-  },
-  {
-    "publish": false,
     "title": "[H2][Miner] Add competitive supply for WEATHER_FORECAST_VERIFY",
     "work_type": "miner",
     "gap_type": "supply",
@@ -195,85 +162,6 @@
       "Affected H2 Apps consume the result without a workaround; Provider-native payloads remain permitted"
     ],
     "good_first_bounty": true,
-    "reward": {
-      "funded": false,
-      "amount": null,
-      "denomination": null,
-      "payout_asset": null,
-      "max_awards": 1,
-      "eligibility": null,
-      "verification_condition": null,
-      "payout_window": null,
-      "payout_proof": null
-    }
-  },
-  {
-    "publish": false,
-    "title": "[H2][Evaluator] Contribute a scoring adapter for AI & Machine Learning Intents",
-    "work_type": "evaluator",
-    "gap_type": "evaluation",
-    "priority": "p1",
-    "intent": null,
-    "missions": [
-      "autonomous-systems",
-      "commodities",
-      "conflict-intelligence",
-      "consumer-platform",
-      "institutional-markets",
-      "legal",
-      "model-economy",
-      "personal-agent"
-    ],
-    "why": "The catalogue marks many Intents in this Category as needing a Category-level scoring adapter. One adapter can serve compatible Intents, while qualification and Miner Rankings stay per Intent. Publish only after maintainers confirm the need privately; do not name specific weak Intents here.",
-    "current_state": "VERIFY AGAINST LIVE EVALUATION STATE BEFORE PUBLISHING. Keep Intent-specific findings in the private review channel.",
-    "acceptance": [
-      "Adapter builds to WASM and runs through the approved evaluator interface on the public reference fixtures",
-      "Adapter states which Intents it is compatible with and the task requirements it assumes",
-      "A second reviewer rebuilds it and reproduces identical scores",
-      "Known-weak outputs score below reference-quality outputs on the public fixtures, and limitations are documented rather than overstated",
-      "No Provider-specific scoring exception is introduced",
-      "Submitted through V2 admission and qualification; a GitHub merge alone does not change Canonical Evaluator state"
-    ],
-    "good_first_bounty": false,
-    "reward": {
-      "funded": false,
-      "amount": null,
-      "denomination": null,
-      "payout_asset": null,
-      "max_awards": 1,
-      "eligibility": null,
-      "verification_condition": null,
-      "payout_window": null,
-      "payout_proof": null
-    }
-  },
-  {
-    "publish": false,
-    "title": "[H2][Evaluator] Contribute evaluation material for AI & Machine Learning Intents",
-    "work_type": "evaluator",
-    "gap_type": "evaluation",
-    "priority": "p2",
-    "intent": null,
-    "missions": [
-      "autonomous-systems",
-      "commodities",
-      "conflict-intelligence",
-      "consumer-platform",
-      "institutional-markets",
-      "legal",
-      "model-economy",
-      "personal-agent"
-    ],
-    "why": "Evaluation needs independently supported references and task examples. Publish only after maintainers confirm the need privately; do not name specific Intents, counts or coverage gaps here.",
-    "current_state": "VERIFY AGAINST LIVE EVALUATION STATE BEFORE PUBLISHING. Keep Intent-specific findings in the private review channel.",
-    "acceptance": [
-      "Material matches the actual scope of the target Intents, not just the Category vocabulary",
-      "References come from independent sources with provenance recorded; synthetic labels are marked as synthetic",
-      "Material is fresh enough for the task and reproducible by a reviewer from the cited sources",
-      "Hidden qualification material is never posted to GitHub; it is submitted through the V2 admission channel",
-      "A passing schema check is not treated as proof that labels are correct"
-    ],
-    "good_first_bounty": false,
     "reward": {
       "funded": false,
       "amount": null,

@@ -84,13 +84,68 @@ For a major model/API/tool release, include the canonical release source, use ex
 
 Maintainers normalize proposals into the smallest reusable bounty.
 
-## Contributing evaluation material
+## Contributing evaluation material or a scoring module
 
-Use the [Evaluation material issue form](.github/ISSUE_TEMPLATE/evaluation-material-gap.yml) for an evidenced gap, or pick a verified open Issue. A public Issue should identify the **Category and general evaluation approach**. Handle affected Intents, adapter/profile IDs, detailed coverage weaknesses, hidden questions and exact qualification targets through an authorized private reviewer workflow. Submit material through V2 admission and qualification when applicable; Canonical Evaluator state is managed by the protocol rather than GitHub.
+This is the one description of the flow. Everything else links here.
 
-Use independent evidence when available, preserve upstream source provenance and distinguish verified reference observations from synthetic labels. Keep hidden sampling questions and expected answers in the authorized review system. An unranked Intent may still be routable and should display that status accurately.
+**GitHub is where the work is claimed, proven and approved. Anjoman is where the network
+receives it.** Those are two decisions: a maintainer approving your part on an Issue does not
+make the network use your work, and the network using it does not close the Issue.
 
-The bounty repo aggregates repeated compatible Intent gaps rather than generating millions of issues. See [docs/EVALUATION_NEEDS.md](docs/EVALUATION_NEEDS.md).
+### 1. Find out what the Intent actually needs
+
+Look it up in [the Intent catalogue](docs/INTENTS.md), or run `./tb intent <NAME>`. Both are
+generated from the node, so the kind they show is the kind the network really scores that
+Intent as. What each kind needs:
+
+| Kind | Evaluation material | Scoring module |
+|---|---|---|
+| **deterministic** | **Truth sources**: free public APIs (no key) that answer the Intent's question | None to build. The network's own comparator does the comparing. |
+| **hybrid** | Truth sources **and** question pairs | An **evaluator adapter**, registered on the family |
+| **judgment** | **Question pairs**: a real question with a better and a worse answer | An **evaluator adapter**, registered on the family |
+
+A scoring module is registered on a **family** (`FX_NOW`), never on one Intent
+(`FX_NOW_EUR`), and the family's own kind decides which kind of module it takes. A family's
+module also scores only the Intents of the family's own kind. So a **deterministic Intent
+under a judgment family has no module anyone can build for it**: one registered there waits
+as `pending` with `awaiting_compatible_material` and never goes live. The catalogue says
+which Intents those are, so check before you build. Don't infer requirements from an
+Intent's name, from an older Issue, or from its on-chain readiness, which is a separate
+thing from its kind.
+
+If the node does not settle something, say so on the Issue and ask. Don't guess.
+
+### 2. Submit it through Anjoman
+
+Everything reaches the network through [Evaluate](https://anjoman.ai/dashboard/eval).
+Every Intent name in the catalogue, and in each bounty Issue, links there with that Intent
+already chosen. The guides are
+[Contribute Evaluation Data](https://anjoman.ai/docs/scoring/contribute-evaluation-data) for
+material and
+[Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module) for a
+module. Nothing is submitted by posting it on GitHub.
+
+Then check what the network made of it, on the same page: each row of material ends up
+`eligible` or `rejected` with a reason, and a module's registration shows its stage.
+
+### 3. Link it back here
+
+Comment `/submit` on the Issue with the Intent you worked on and the address you uploaded
+from, or your module's registration id. A maintainer verifies it with the network's own
+public reads, so give enough to find it. Your address is public once you post it; that is
+your choice to make.
+
+**No open Issue for the Intent you care about?** You can still contribute: the network takes
+material for every Intent in the catalogue whether or not a bounty exists. An Issue is how a
+bounty gets claimed and approved, not permission to contribute.
+
+### Quality
+
+Material has to fit the Intent's real scope, not just its name: the right place, time,
+language and parameters. Prefer independently sourced references to repackaged labels, keep
+the upstream provenance, and mark a synthetic answer as synthetic. A row that passes the
+format checks is not thereby correct. An unranked Intent may still be routable, and should be
+described that way rather than as broken.
 
 ## Contribution quality
 
@@ -110,9 +165,15 @@ Repeated low-signal behavior may be closed without review.
 Follow [SECURITY.md](SECURITY.md) for secrets and exploitable vulnerability details.
 
 
-## Evaluation vulnerability and material disclosure
+## What stays out of a public Issue
 
-Keep public proposals at a nonsensitive Category level. Share exact affected Intent IDs, test distributions, missing reference counts, source concentration, hidden qualification inputs and answers, private diagnostic links, and customer payloads with authorized maintainers through the channel in [SECURITY.md](SECURITY.md). Maintainers verify sensitive scope privately before opening or approving funded work.
+An Intent's name, its kind and what that kind needs are public: the node serves them to
+anyone and [the catalogue](docs/INTENTS.md) prints them. What does not go in a public Issue,
+PR or comment: test distributions, missing-reference counts, source concentration, the
+qualification inputs and answers the network keeps back, private diagnostic links and
+customer payloads. Send those to maintainers through the channel in
+[SECURITY.md](SECURITY.md), and they confirm sensitive scope privately before opening or
+approving funded work.
 
 ## Demand and Provider opportunities
 

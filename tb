@@ -10,6 +10,9 @@ ROOT=Path(__file__).resolve().parent
 INTENTS=json.loads((ROOT/'catalog/intents.json').read_text(encoding='utf-8'))
 MISSIONS=json.loads((ROOT/'catalog/missions.json').read_text(encoding='utf-8'))
 I_BY_NAME={x['name']:x for x in INTENTS}
+# Families hold their Intents, so a lookup finds either a family or one Intent under it.
+CHILD_FAMILY={i['name']:x for x in INTENTS for i in x.get('intents',[])}
+MATERIAL={'deterministic':'truth sources','hybrid':'truth sources and question pairs','judgment':'question pairs'}
 M_BY_ID={x['id']:x for x in MISSIONS}
 M_NAME={x['id']:x['name'] for x in MISSIONS}
 
@@ -35,12 +38,14 @@ def find_mission(q):
 def find_intent(q):
     q=q.upper()
     if q in I_BY_NAME: return I_BY_NAME[q]
-    matches=[x for x in INTENTS if q in x['name'].upper() or q.lower() in x['description'].lower()]
+    if q in CHILD_FAMILY: return CHILD_FAMILY[q]
+    matches=[x for x in INTENTS if q in x['name'].upper() or q.lower() in x.get('description','').lower()
+             or any(q in i['name'] for i in x.get('intents',[]))]
     if len(matches)==1: return matches[0]
     if not matches:
         print('No Intent matched. Try ./tb search <term>'); return None
     print('Multiple Intents matched:')
-    for x in matches[:30]: print(' ',x['name'],'—',x['description'])
+    for x in matches[:30]: print(' ',x['name'],'—',x.get('description','') or x['class']+' family')
     if len(matches)>30: print(f'  ... and {len(matches)-30} more')
     return None
 
@@ -58,7 +63,8 @@ if not args or args[0] in {'help','-h','--help'}: usage()
 cmd=args[0]
 
 if cmd=='map':
-    print(f'{len(INTENTS)} Intents · {len(MISSIONS)} H2 missions\n')
+    live=[x for x in INTENTS if x.get('on_network')]
+    print(f'{sum(len(x["intents"]) for x in live)} Intents in {len(live)} families on the network · {len(MISSIONS)} H2 missions\n')
     for i,m in enumerate(MISSIONS,1):
         print(f'{i:02d}. {m["name"]:<24} {len(m["core_intents"]):>2} core Intents  ({m["id"]})')
     raise SystemExit()
@@ -80,9 +86,22 @@ if cmd=='intent':
     x=find_intent(' '.join(args[1:]));
     if not x: raise SystemExit(1)
     print(x['name'])
-    print(f"Category: {x['category']} · Tier: {x['tier']} · Class: {x['class']} · Priority: {x['priority_score']}")
-    print(f"Target latency: {x.get('target_latency') or '—'} · Scoring: {x.get('scoring_path') or '—'}")
-    print('\n'+x['description'])
+    if not x.get('on_network'):
+        print('The network serves no Intent under this name. Ask the protocol team whether it was renamed.')
+    else:
+        print(f"{x['class']} family · Category: {x.get('category') or 'not yet categorised'} · Tier: {x['tier']}")
+    if x.get('description'): print('\n'+x['description'])
+    for i in x.get('intents',[]):
+        print(f"\n  {i['name']}  ({i['class']})")
+        if i.get('params'): print('  asks:    '+', '.join(i['params']))
+        if i.get('answer'): print('  answers: '+', '.join(i['answer']))
+        contribute=MATERIAL.get(i['class'],'evaluation material')
+        if i['class']!=x['class']:
+            contribute+='; no scoring module can serve it, because the family is '+x['class']
+        elif x['class']!='deterministic':
+            contribute+='; or an evaluator adapter on '+x['name']
+        print('  needs:   '+contribute)
+        print('  submit:  https://anjoman.ai/dashboard/eval?intent='+i['name'])
     mids=x.get('used_by_missions',[])
     print('\nUsed by H2 missions: '+(', '.join(M_NAME[m] for m in mids) if mids else 'none in the starting map'))
     raise SystemExit()
@@ -92,13 +111,14 @@ if cmd=='search':
     q=' '.join(args[1:]).lower()
     matches=[]
     for x in INTENTS:
-        hay=' '.join(str(x.get(k,'')) for k in ('name','category','description','class')).lower()
-        if q in hay: matches.append(x)
+        hay=' '.join(str(x.get(k,'')) for k in ('name','category','description','class'))
+        hay+=' '+' '.join(i['name']+' '+i.get('description','') for i in x.get('intents',[]))
+        if q in hay.lower(): matches.append(x)
     if not matches:
         print('No matches.'); raise SystemExit(1)
     for x in matches[:50]:
         mids=x.get('used_by_missions',[])
-        print(f"{x['name']:<34} {x['category']:<28} missions={len(mids)}")
+        print(f"{x['name']:<34} {(x.get('category') or '—'):<28} missions={len(mids)}")
     if len(matches)>50: print(f'... and {len(matches)-50} more')
     raise SystemExit()
 

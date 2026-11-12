@@ -1,30 +1,44 @@
-name: Evaluator development opportunity (public / nonsensitive)
-description: Suggest reusable evaluation work for a broad public Category.
+name: Scoring module gap
+description: An Intent family needs a better evaluator adapter, or scores answers badly.
 title: "[Evaluator] "
 labels: ["work:evaluator", "gap:evaluation", "status:triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        This form creates a public Issue. Describe the Category and general improvement here; report exploitable blind spots, stale tests, source concentration, hidden cases, per-Intent weaknesses, credentials and customer data through the private channel in SECURITY.md.
+        A scoring module is registered on an Intent **family** (`FX_NOW`), never on one Intent (`FX_NOW_EUR`), and the family's own kind decides which kind of module it takes. A family's module scores only the Intents of the family's own kind.
+
+        **Check the family's kind in [the catalogue](../../blob/main/docs/INTENTS.md) before you report or build.** A judgment or hybrid family takes an evaluator adapter, and a better one can replace the one in place. A deterministic family takes a comparator module, which only has to compute the network's fixed comparison rule, so there is no better one to build. A deterministic Intent under a judgment family has **no module anyone can register for it**: the network's own comparator scores it, and a module sent to that family waits as `pending` with `awaiting_compatible_material` for ever.
+
+        Keep the qualification material the network holds back, private diagnostics and exploit details out of this form; send those through the channel in [SECURITY.md](../../blob/main/SECURITY.md).
   - type: input
-    id: category
+    id: family
     attributes:
-      label: Public Category
-      description: Name the reusable task family for this proposal.
+      label: Family
+      description: The family a module would be registered on, and its kind as the catalogue gives it.
+      placeholder: e.g. CODE_REVIEW (judgment)
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Suggested general improvement
-      description: Describe a public evaluation methodology, independent verification tool or Category-compatible adapter improvement.
+      label: What the module should do better
+      description: What the current scoring gets wrong, and what yours would do instead. Name the Intents under the family that it would serve.
     validations:
       required: true
   - type: textarea
-    id: public_acceptance
+    id: outcome
     attributes:
-      label: Safe public acceptance outline
-      description: Describe general reproducible outcomes. Maintainers agree on sensitive targets and validation details privately.
+      label: What would close it
+      description: The observable result, normally "a module is live on this family and scores its Intents". The network decides that on its own checks, so say what you would show a maintainer.
     validations:
       required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Check
+      options:
+        - label: I have checked the family's kind in the catalogue, and a module of that kind can serve the Intents I named.
+          required: true
+        - label: This Issue discloses no secret, private key, customer data or exploitable weakness.
+          required: true
