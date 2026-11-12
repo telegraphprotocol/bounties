@@ -6,9 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this to report an Intent whose material the network is missing. **You do not need an Issue to contribute**: material for any Intent in [the catalogue](../../blob/main/docs/INTENTS.md) can be sent straight to [Anjoman](https://anjoman.ai/dashboard/eval). An Issue is how a bounty gets claimed and approved.
+        Use this to report an Intent whose material the network is missing. **You do not need an Issue to contribute**: material for any Intent in [the catalogue](https://github.com/telegraphprotocol/bounties/blob/main/docs/INTENTS.md) can be sent straight to [Anjoman](https://anjoman.ai/dashboard/eval). An Issue is how a bounty gets claimed and approved.
 
-        Look the Intent up in [the catalogue](../../blob/main/docs/INTENTS.md) or with `./tb intent <NAME>` first: it says the kind the node scores it as, and so which material it takes. Keep private diagnostics, the qualification material the network holds back, customer data and exploit details out of this form; send those through the channel in [SECURITY.md](../../blob/main/SECURITY.md).
+        Look the Intent up in [the catalogue](https://github.com/telegraphprotocol/bounties/blob/main/docs/INTENTS.md) or with `./tb intent <NAME>` first: it says the kind the node scores it as, and so which material it takes. Keep private diagnostics, the qualification material the network holds back, customer data and exploit details out of this form; send those through the channel in [SECURITY.md](https://github.com/telegraphprotocol/bounties/blob/main/SECURITY.md).
   - type: input
     id: intents
     attributes:

@@ -26,7 +26,8 @@ def eval_link(name):
 
 
 def bounty_link(name):
-    return f'../../issues?q=is%3Aissue+is%3Aopen+{name}'
+    # docs/INTENTS.md is one directory deep, so the repo root is three levels up from it.
+    return f'../../../issues?q=is%3Aissue+is%3Aopen+{name}'
 
 
 def contribute(intent, family):

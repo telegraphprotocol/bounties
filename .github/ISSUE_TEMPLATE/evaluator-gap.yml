@@ -8,9 +8,9 @@ body:
       value: |
         A scoring module is registered on an Intent **family** (`FX_NOW`), never on one Intent (`FX_NOW_EUR`), and the family's own kind decides which kind of module it takes. A family's module scores only the Intents of the family's own kind.
 
-        **Check the family's kind in [the catalogue](../../blob/main/docs/INTENTS.md) before you report or build.** A judgment or hybrid family takes an evaluator adapter, and a better one can replace the one in place. A deterministic family takes a comparator module, which only has to compute the network's fixed comparison rule, so there is no better one to build. A deterministic Intent under a judgment family has **no module anyone can register for it**: the network's own comparator scores it, and a module sent to that family waits as `pending` with `awaiting_compatible_material` for ever.
+        **Check the family's kind in [the catalogue](https://github.com/telegraphprotocol/bounties/blob/main/docs/INTENTS.md) before you report or build.** A judgment or hybrid family takes an evaluator adapter, and a better one can replace the one in place. A deterministic family takes a comparator module, which only has to compute the network's fixed comparison rule, so there is no better one to build. A deterministic Intent under a judgment family has **no module anyone can register for it**: the network's own comparator scores it, and a module sent to that family waits as `pending` with `awaiting_compatible_material` for ever.
 
-        Keep the qualification material the network holds back, private diagnostics and exploit details out of this form; send those through the channel in [SECURITY.md](../../blob/main/SECURITY.md).
+        Keep the qualification material the network holds back, private diagnostics and exploit details out of this form; send those through the channel in [SECURITY.md](https://github.com/telegraphprotocol/bounties/blob/main/SECURITY.md).
   - type: input
     id: family
     attributes:
