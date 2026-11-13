@@ -4,7 +4,7 @@ This repository is designed to be readable by humans **and agents**.
 
 ## Machine-readable sources
 
-- `catalog/intents.json` — public H2 Intent catalogue and metadata. Its `evaluation_mechanism` / `scoring_path` fields are H2/reference coordination metadata, **not** immutable Canonical Evaluator state; the live Canonical Evaluator is determined by Telegraph's protocol competition/verification process.
+- `catalog/intents.json` — the Intent catalogue, **generated from the node** by `scripts/sync_catalog.py`: one entry per family, its kind, and the Intents under it with their own kind, parameters and answer fields. Never edit those fields by hand; `--check` fails when the file no longer matches the node. The tier, Category, priority score and mission map are the only hand-kept parts. Which module is live for an Intent is decided by the protocol's own competition, not by this file.
 - `catalog/missions.json` — Season II mission → Intent dependency map.
 - `seed/h2-bounties.json` — maintainer-reviewed seed candidates; only entries with `"publish": true` may be published by `make seed-h2`.
 - GitHub Issues — live source of truth for public bounty state.
@@ -21,10 +21,14 @@ This repository is designed to be readable by humans **and agents**.
 7. A mission output or new Provider/model version is not automatically a new Intent. Prefer reusable intelligence primitives.
 8. For `source:release` work, cite the canonical release source and never require a predetermined rank.
 9. Do not invent customer demand, private commitments, provider endorsement, or usage to justify a public bounty.
-10. For evaluation work, group compatible Intents by Category + adapter + task requirement profile; do not open one GitHub issue per Intent. Keep hidden qualification material secret.
+10. For evaluation work, take an Intent's kind and what it needs from the node (`catalog/intents.json`, `docs/INTENTS.md`, `./tb intent <NAME>`), never from a name, an older Issue or on-chain readiness. A scoring module is registered on a family and scores only the Intents of the family's own kind, so a deterministic Intent under a judgment family has no module anyone can build for it: never ask for one. Not every Intent needs its own GitHub Issue, but every Intent must be findable in the catalogue with its real requirements. Keep the qualification material the network holds back secret.
 11. No mechanical admission counter, source domain count, synthetic answer set or passing WASM output proves semantic correctness. Use reproducible independent evidence where possible.
 12. Treat exported opportunity records as **triage proposals**. Never auto-claim, auto-approve, promise bounty rewards, or alter protocol Canonical Evaluator/Validator state from GitHub.
 13. Do not imply that per-Intent protocol Evaluator emissions pay for merely supplying data or opening/closing GitHub work.
+
+## Contributing evaluation work
+
+The one description of the flow is in [CONTRIBUTING.md](CONTRIBUTING.md#contributing-evaluation-material-or-a-scoring-module): find what the Intent needs from the node, submit it through Anjoman, then `/submit` the reference here. GitHub approval and the network's own acceptance are separate decisions.
 
 ## Useful local commands
 
@@ -52,7 +56,7 @@ Seeded bounty Issues contain a hidden `telegraph-bounty` JSON marker for machine
 
 ## Public evaluation opportunity confidentiality
 
-Do not publish, summarize, copy or quote internal node/indexer evaluation observations, Intent-specific weaknesses, hidden material, source-diversity or freshness statistics, verification thresholds, private evidence URLs, or material quality alerts in Issues, PRs, comments, logs or artifacts. Use the documented Category-level public projection only (`docs/EVALUATION_NEEDS.md`). Automated evaluation GitHub issues are generic and unfunded review candidates; no direct work approval or new economic mechanism is implied.
+An Intent's name, its kind, what that kind needs and which families take which module are public: the node serves them to anyone and `docs/INTENTS.md` prints them. Do not publish, summarize, copy or quote internal node/indexer evaluation observations, hidden material, source-diversity or freshness statistics, verification thresholds, private evidence URLs, or material quality alerts in Issues, PRs, comments, logs or artifacts. `docs/EVALUATION_NEEDS.md` describes a separate Category-level projection used to publish internal triage findings; it is not the path a contributor follows. Automated evaluation GitHub issues are generic and unfunded review candidates; no direct work approval or new economic mechanism is implied.
 
 ## Permanent demand and product integration
 

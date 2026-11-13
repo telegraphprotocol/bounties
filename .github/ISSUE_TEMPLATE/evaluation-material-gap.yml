@@ -1,38 +1,52 @@
-name: Evaluation contribution opportunity (public / nonsensitive)
-description: Propose public, Category-level evaluation material or methodology.
+name: Evaluation material gap
+description: An Intent on the network has no usable evaluation material.
 title: "[Evaluation] "
 labels: ["work:evaluator", "gap:evaluation", "status:triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        This form creates a public Issue. Describe the Category and general contribution here; share affected Intent IDs, detailed coverage metrics, private evidence URLs, hidden samples, reference answers, qualification thresholds, personal or customer data, and exploit details through the private channel in SECURITY.md.
+        Use this to report an Intent whose material the network is missing. **You do not need an Issue to contribute**: material for any Intent in [the catalogue](https://github.com/telegraphprotocol/bounties/blob/main/docs/INTENTS.md) can be sent straight to [Anjoman](https://anjoman.ai/dashboard/eval). An Issue is how a bounty gets claimed and approved.
+
+        Look the Intent up in [the catalogue](https://github.com/telegraphprotocol/bounties/blob/main/docs/INTENTS.md) or with `./tb intent <NAME>` first: it says the kind the node scores it as, and so which material it takes. Keep private diagnostics, the qualification material the network holds back, customer data and exploit details out of this form; send those through the channel in [SECURITY.md](https://github.com/telegraphprotocol/bounties/blob/main/SECURITY.md).
   - type: input
-    id: category
+    id: intents
     attributes:
-      label: Public Category
-      description: Identify the broadly supported Category for this contribution.
-      placeholder: e.g. weather-intelligence
+      label: Intent name or names
+      description: Exactly as the node spells them, from the catalogue.
+      placeholder: e.g. GAS_PRICE_GENERAL
     validations:
       required: true
-  - type: textarea
-    id: contribution
+  - type: dropdown
+    id: material
     attributes:
-      label: Public contribution proposal
-      description: Describe a public contribution such as reference material, methodology or a compatible evaluation approach.
+      label: Which material is missing
+      description: The Intent's kind decides this. Deterministic takes truth sources; judgment takes question pairs; hybrid takes both.
+      options:
+        - Truth sources (deterministic)
+        - Question pairs (judgment)
+        - Both (hybrid)
+        - I could not tell from the catalogue
     validations:
       required: true
   - type: textarea
     id: evidence
     attributes:
-      label: Nonsensitive proof or examples
-      description: Add published documentation or a generic example. Use the private security channel for sensitive details.
-    validations:
-      required: false
-  - type: textarea
-    id: public_acceptance
-    attributes:
-      label: Public acceptance outline
-      description: State public, general outcomes. Maintainers confirm sensitive criteria through an authorized review before opening a claimable bounty.
+      label: What you saw
+      description: What you read on Anjoman or in the catalogue that shows the material is missing or does not fit the Intent's real scope. No internal diagnostics.
     validations:
       required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would close it
+      description: The observable result. For material that is normally "the network has accepted material for this Intent and uses it for ranking".
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Check
+      options:
+        - label: This Issue discloses no secret, private key, customer data or exploitable weakness.
+          required: true

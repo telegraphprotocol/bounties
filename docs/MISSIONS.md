@@ -47,7 +47,7 @@ Core starting Intents:
 - `MACRO_ECONOMIC_INDICATOR`
 - `FX_NOW`
 - `QUESTION_ANSWERING`
-- `WEB_SEARCH_QUERY`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
 - `LIQUIDITY_DEPTH_VERIFY`
 
 > This map is a coordination baseline, not a hard whitelist. App builders may compose any relevant Telegraph Intents.
@@ -61,9 +61,9 @@ Core starting Intents:
 - `SANCTIONS_SCREENING_MATCH`
 - `CONTRACT_OBLIGATION_AUDIT`
 - `DOCUMENT_AUTHENTICITY`
-- `WEB_SEARCH_QUERY`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
 - `QUESTION_ANSWERING`
-- `FACT_CHECKING`
+- `FACT_CHECKING` — the network serves no Intent under this name yet
 
 > This map is a coordination baseline, not a hard whitelist. App builders may compose any relevant Telegraph Intents.
 
@@ -77,8 +77,8 @@ Core starting Intents:
 - `LIVE_PORT_CONGESTION`
 - `MACRO_ECONOMIC_INDICATOR`
 - `SANCTIONS_SCREENING_MATCH`
-- `WEB_SEARCH_QUERY`
-- `FACT_CHECKING`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
+- `FACT_CHECKING` — the network serves no Intent under this name yet
 - `WEATHER_FORECAST_VERIFY`
 
 > This map is a coordination baseline, not a hard whitelist. App builders may compose any relevant Telegraph Intents.
@@ -103,7 +103,7 @@ Core starting Intents:
 Core starting Intents:
 
 - `QUESTION_ANSWERING`
-- `FACT_CHECKING`
+- `FACT_CHECKING` — the network serves no Intent under this name yet
 - `MEDIA_FORENSIC_VERIFY`
 - `PRODUCT_AUTHENTICITY`
 - `LIVE_SHELF_PRICE`
@@ -128,7 +128,7 @@ Core starting Intents:
 - `DOCUMENT_AUTHENTICITY`
 - `FX_NOW`
 - `MACRO_ECONOMIC_INDICATOR`
-- `WEB_SEARCH_QUERY`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
 
 > This map is a coordination baseline, not a hard whitelist. App builders may compose any relevant Telegraph Intents.
 
@@ -136,11 +136,11 @@ Core starting Intents:
 
 Core starting Intents:
 
-- `WEB_SEARCH_QUERY`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
 - `QUESTION_ANSWERING`
 - `LANGUAGE_TRANSLATION`
 - `TEXT_SUMMARIZATION`
-- `URL_CONTENT_EXTRACTION`
+- `URL_CONTENT_EXTRACTION` — the network serves no Intent under this name yet
 - `CODE_GENERATION`
 - `TASK_EXECUTION_QUALITY`
 - `B2B_IDENTITY_ENRICHMENT`
@@ -161,7 +161,7 @@ Core starting Intents:
 - `REGRESSION_VERIFY`
 - `CODE_GENERATION`
 - `QUESTION_ANSWERING`
-- `WEB_SEARCH_QUERY`
+- `WEB_SEARCH_QUERY` — the network serves no Intent under this name yet
 
 > This map is a coordination baseline, not a hard whitelist. App builders may compose any relevant Telegraph Intents.
 
@@ -202,8 +202,8 @@ Core starting Intents:
 
 Core starting Intents:
 
-- `CRYPTO_PRICE_LOOKUP`
-- `STOCK_PRICE_QUOTE`
+- `CRYPTO_PRICE_LOOKUP` — the network serves no Intent under this name yet
+- `STOCK_PRICE_QUOTE` — the network serves no Intent under this name yet
 - `LIQUIDITY_DEPTH_VERIFY`
 - `ASSET_RESERVE_ATTESTATION`
 - `ONCHAIN_METRIC_VERIFY`

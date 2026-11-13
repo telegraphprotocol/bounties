@@ -1,5 +1,11 @@
 # Evaluation contribution pipeline
 
+> **Contributors: this is not the page you need.** What each Intent needs, and how to send it
+> to the network, is in
+> [CONTRIBUTING.md](../CONTRIBUTING.md#contributing-evaluation-material-or-a-scoring-module)
+> and [the Intent catalogue](INTENTS.md). This page is the maintainer tooling for publishing
+> an internal triage finding without disclosing what produced it.
+
 This repository coordinates **public Category-level evaluation contributions** for Telegraph V2. V2 remains authoritative for evaluator competition, qualification, Miner ranking and Validator finality. Funding follows the repository's separate reward process.
 
 ## Security model: minimum necessary disclosure

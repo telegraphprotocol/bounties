@@ -21,14 +21,24 @@ Every gap on the board is one of these:
 | Gap | What it means | Label |
 |---|---|---|
 | **Miner / Provider** | Missing, weak or unreliable intelligence supply for an Intent | `work:miner` |
-| **Evaluator: adapter** | Missing or weak scoring logic (a Category-level WASM adapter) | `work:evaluator` |
-| **Evaluator: material** | Missing or stale test material and independently supported references | `work:evaluator` |
+| **Evaluator: adapter** | Missing or weak scoring logic, registered on an Intent family | `work:evaluator` |
+| **Evaluator: material** | Missing or stale evaluation material: truth sources for a deterministic Intent, question pairs for a judgment one | `work:evaluator` |
 | **App / Agent / integration** | An application that cannot finish its workflow because something is missing | `work:app` |
 | **Tooling / protocol** | SDKs, examples, docs, observability, reliability | `work:tooling`, `work:protocol` |
 | **Security hardening** | Public, non-sensitive hardening of this repository's tooling | `work:security` |
 | **Release coverage** | A major AI release that the network cannot yet measure fairly | `source:release` |
 
 Miners and Evaluators work **per Intent**, independent of industry. Apps work **per mission**. One good contribution can unblock several apps at once.
+
+**Evaluation work is submitted through Anjoman, not by posting it here.** GitHub is where a
+bounty is claimed, proven and approved; [Evaluate](https://anjoman.ai/dashboard/eval) is
+where the network receives the work. What an Intent needs depends on the kind the node scores
+it as, and a scoring module is registered on an Intent family rather than one Intent, so some
+Intents have no module anyone can build for them. The
+[catalogue](docs/INTENTS.md) says which, per Intent, and
+[CONTRIBUTING.md](CONTRIBUTING.md#contributing-evaluation-material-or-a-scoring-module)
+describes the whole flow. You can contribute to any Intent in the catalogue, with or without
+an open Issue for it.
 
 ## How a bounty works
 
@@ -48,13 +58,13 @@ A bounty is complete when its acceptance criteria are **reproducibly met**. Prot
 | See what to work on first | [P0 bounties](../../issues?q=is%3Aissue+is%3Aopen+label%3Apriority%3Ap0+label%3Astatus%3Aopen) |
 | Pick an easy task | [Good first bounties](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+bounty%22+label%3Astatus%3Aopen) |
 | Build a Miner / Provider | [Miner work](../../issues?q=is%3Aissue+is%3Aopen+label%3Awork%3Aminer+label%3Astatus%3Aopen) |
-| Build an Evaluator, adapter or material | [Evaluator work](../../issues?q=is%3Aissue+is%3Aopen+label%3Awork%3Aevaluator+label%3Astatus%3Aopen) · [Evaluation needs](docs/EVALUATION_NEEDS.md) |
+| Build an Evaluator, adapter or material | [How it works, start to finish](CONTRIBUTING.md#contributing-evaluation-material-or-a-scoring-module) · [Evaluator work](../../issues?q=is%3Aissue+is%3Aopen+label%3Awork%3Aevaluator+label%3Astatus%3Aopen) |
 | Unblock an App or Agent | [App work](../../issues?q=is%3Aissue+is%3Aopen+label%3Awork%3Aapp+label%3Astatus%3Aopen) |
 | Browse Season II (H2) work | [H2 gaps](../../issues?q=is%3Aissue+is%3Aopen+label%3Asource%3Ah2) · [How Season II works](docs/H2.md) |
 | Browse customer and mainnet gaps | [Customer](../../issues?q=is%3Aissue+is%3Aopen+label%3Asource%3Acustomer) · [Mainnet](../../issues?q=is%3Aissue+is%3Aopen+label%3Asource%3Amainnet) |
 | Report a new gap | [Open a gap report](../../issues/new/choose) |
 | Cover an important AI release | [Release coverage](docs/RELEASE_COVERAGE.md) |
-| Explore the Intent catalogue | [103 Intents](docs/INTENTS.md) · [Mission map](docs/MISSIONS.md) · [Reuse map](docs/NETWORK_MAP.md) |
+| Explore the Intent catalogue | [Every Intent, its kind and what it needs](docs/INTENTS.md) · [Mission map](docs/MISSIONS.md) · [Reuse map](docs/NETWORK_MAP.md) |
 | Look up a term | [Glossary](docs/GLOSSARY.md) |
 | Find all documentation | [Docs index](docs/README.md) |
 | Use this repo from an agent or script | [AGENTS.md](AGENTS.md) · [Integration](docs/INTEGRATION.md) |
