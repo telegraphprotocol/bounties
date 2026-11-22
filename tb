@@ -96,9 +96,9 @@ if cmd=='intent':
         if i.get('params'): print('  asks:    '+', '.join(i['params']))
         if i.get('answer'): print('  answers: '+', '.join(i['answer']))
         contribute=MATERIAL.get(i['class'],'evaluation material')
-        if i['class']!=x['class']:
-            contribute+='; no scoring module can serve it, because the family is '+x['class']
-        elif x['class']!='deterministic':
+        if i['class']!=x['class'] or x['class']=='deterministic':
+            contribute+='; no adapter (comparator modules are no longer accepted)'
+        else:
             contribute+='; or an evaluator adapter on '+x['name']
         print('  needs:   '+contribute)
         print('  submit:  https://anjoman.ai/dashboard/eval?intent='+i['name'])

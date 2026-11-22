@@ -17,17 +17,18 @@ Anyone can add material. It goes to the network through Anjoman:
 [Evaluate](https://anjoman.ai/dashboard/eval). Every Intent name below opens that page with the Intent already chosen.
 The format, the limits and the reasons a row is turned down: [Contribute Evaluation Data](https://anjoman.ai/docs/scoring/contribute-evaluation-data).
 
-## Scoring modules: which families take one
+## Adapters: which families take one
 
-A scoring module is registered on a **family**, never on a single Intent, and the
-family's own kind decides which kind it takes. A family's module also scores only the
-Intents of the family's own kind. So:
+An evaluator adapter is registered on a **family** (the parent prefix, for example
+`GAS_PRICE`, not `GAS_PRICE_GENERAL`), never on a single Intent. Every Intent has the
+same kind as its family, and the family's kind decides what it takes. So:
 
-- A **judgment** or **hybrid** family takes an **evaluator adapter**. A better adapter can replace the one in place, so this is open work.
-- A **deterministic** family takes a **comparator module**. A comparator has no model: it only has to compute the network's fixed comparison rule, so there is no better one to build.
-- A **deterministic Intent under a judgment family** is scored by the network's own shared comparator. **Nothing registered on that family can score it**, so there is no module to build for it: one sent there waits as `pending` with `awaiting_compatible_material` and never goes live. The Contribute column says so per Intent.
+- A **judgment** or **hybrid** family takes an **evaluator adapter** (a LoRA package). A better adapter can replace the one in place, so this is open work.
+- A **deterministic** family takes **no adapter**. The node scores it with its built-in checker. **Comparator modules are no longer accepted**, so do not build one. Contribute truth sources instead.
 
-How to build and register one: [Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module).
+Check an Intent's kind with `GET /engine/v1/intents/<intent>` or `./tb intent <NAME>`.
+
+How to build and register an adapter: [Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module).
 
 ## No open Issue for your Intent?
 
@@ -249,17 +250,17 @@ Not usable in an on-chain job yet: the intent has no response format.
 
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
-| [`CROSS_CHAIN_STATE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CROSS_CHAIN_STATE_VERIFY_GENERAL) | deterministic | `CROSS_CHAIN_STATE_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+CROSS_CHAIN_STATE_VERIFY_GENERAL) |
+| [`CROSS_CHAIN_STATE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CROSS_CHAIN_STATE_VERIFY_GENERAL) | deterministic | `CROSS_CHAIN_STATE_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CROSS_CHAIN_STATE_VERIFY_GENERAL) |
 | [`EVENT_OUTCOME_RESOLUTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=EVENT_OUTCOME_RESOLUTION_GENERAL) | judgment | `EVENT_OUTCOME_RESOLUTION` (judgment) | question pairs · adapter on `EVENT_OUTCOME_RESOLUTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+EVENT_OUTCOME_RESOLUTION_GENERAL) |
-| [`LIQUIDITY_DEPTH_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LIQUIDITY_DEPTH_VERIFY_GENERAL) | deterministic | `LIQUIDITY_DEPTH_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+LIQUIDITY_DEPTH_VERIFY_GENERAL) |
-| [`ONCHAIN_METRIC_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_METRIC_VERIFY_GENERAL) | deterministic | `ONCHAIN_METRIC_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_METRIC_VERIFY_GENERAL) |
+| [`LIQUIDITY_DEPTH_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LIQUIDITY_DEPTH_VERIFY_GENERAL) | deterministic | `LIQUIDITY_DEPTH_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+LIQUIDITY_DEPTH_VERIFY_GENERAL) |
+| [`ONCHAIN_METRIC_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_METRIC_VERIFY_GENERAL) | deterministic | `ONCHAIN_METRIC_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_METRIC_VERIFY_GENERAL) |
 | [`WASH_TRADING_DETECTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WASH_TRADING_DETECTION_GENERAL) | judgment | `WASH_TRADING_DETECTION` (judgment) | question pairs · adapter on `WASH_TRADING_DETECTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+WASH_TRADING_DETECTION_GENERAL) |
-| [`ASSET_RESERVE_ATTESTATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ASSET_RESERVE_ATTESTATION_GENERAL) | deterministic | `ASSET_RESERVE_ATTESTATION` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+ASSET_RESERVE_ATTESTATION_GENERAL) |
-| [`CRYPTO_TRANSFER_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_TRANSFER_VERIFY_GENERAL) | deterministic | `CRYPTO_TRANSFER_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_TRANSFER_VERIFY_GENERAL) |
+| [`ASSET_RESERVE_ATTESTATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ASSET_RESERVE_ATTESTATION_GENERAL) | deterministic | `ASSET_RESERVE_ATTESTATION` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+ASSET_RESERVE_ATTESTATION_GENERAL) |
+| [`CRYPTO_TRANSFER_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_TRANSFER_VERIFY_GENERAL) | deterministic | `CRYPTO_TRANSFER_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_TRANSFER_VERIFY_GENERAL) |
 | [`SMART_CONTRACT_AUDIT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SMART_CONTRACT_AUDIT_GENERAL) | judgment | `SMART_CONTRACT_AUDIT` (judgment) | question pairs · adapter on `SMART_CONTRACT_AUDIT` | [open](../../../issues?q=is%3Aissue+is%3Aopen+SMART_CONTRACT_AUDIT_GENERAL) |
-| [`CRYPTO_YIELD_RATE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_YIELD_RATE_GENERAL) | deterministic | `CRYPTO_YIELD_RATE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_YIELD_RATE_GENERAL) |
-| [`TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) | deterministic | `TOKEN_TOTAL_SUPPLY_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) |
-| [`VALIDATOR_PERFORMANCE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VALIDATOR_PERFORMANCE_VERIFY_GENERAL) | deterministic | `VALIDATOR_PERFORMANCE_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+VALIDATOR_PERFORMANCE_VERIFY_GENERAL) |
+| [`CRYPTO_YIELD_RATE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_YIELD_RATE_GENERAL) | deterministic | `CRYPTO_YIELD_RATE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_YIELD_RATE_GENERAL) |
+| [`TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) | deterministic | `TOKEN_TOTAL_SUPPLY_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) |
+| [`VALIDATOR_PERFORMANCE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VALIDATOR_PERFORMANCE_VERIFY_GENERAL) | deterministic | `VALIDATOR_PERFORMANCE_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+VALIDATOR_PERFORMANCE_VERIFY_GENERAL) |
 
 ### Details
 
@@ -273,7 +274,7 @@ deterministic
 
 Query asks whether a state root, Merkle-Patricia proof, block header or bridge message from one chain verifies against another. Requires two named chains and a specific proof, header or message. Example: "Verify that the LayerZero message with nonce 4412 from arbitrum executed on base and that the committed state root matches." → CROSS_CHAIN_STATE_VERIFY_GENERAL. Not: "How do cross-chain bridges work?" (conceptual, nothing supplied to verify) → CHAT_COMPLETION_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CROSS_CHAIN_STATE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CROSS_CHAIN_STATE_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CROSS_CHAIN_STATE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CROSS_CHAIN_STATE_VERIFY_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -299,7 +300,7 @@ deterministic · asks `pool`, `chain` · answers `liquidity_usd`
 
 Query names a market, pair or pool and asks for order book depth, bid-ask spread, or the slippage a stated trade size would incur at a point in time. Example: "What is the bid-ask depth and expected slippage on a 50 ETH sell into the WETH/USDC pool on base right now?" → LIQUIDITY_DEPTH_VERIFY_GENERAL. Not: "How much total value is locked in that pool?" (a TVL total, not depth at a size) → TVL_LOOKUP_GENERAL. Not: "Which venue should I route this trade through?" (a routing decision) → OPTIMAL_EXECUTION_ROUTE_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LIQUIDITY_DEPTH_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LIQUIDITY_DEPTH_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LIQUIDITY_DEPTH_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LIQUIDITY_DEPTH_VERIFY_GENERAL)
 
 **`ONCHAIN_METRIC_VERIFY`** — judgment family · tier mandatory · H2 missions: Exchange, Asset Management, Web3 Native & DeFi
 
@@ -311,7 +312,7 @@ deterministic · asks `address`, `block` · answers `balance_gwei`, `address`, `
 
 Query asks for a specific value read from a blockchain node at a stated block height or 'latest': an event log field, gas consumed, a contract view or storage value, a contract-held token balance. The block or 'latest' anchor is what distinguishes it. Example: "At block 21000000 on ethereum, what amount did the Transfer log in tx 0xabc... carry, and how much gas did that tx use?" → ONCHAIN_METRIC_VERIFY_GENERAL. Not: "What was the status of transaction 0xabc...?" (a transaction lookup, not a named metric at a height) → ONCHAIN_TX_LOOKUP_GENERAL. Not: "What is the balance of vitalik.eth?" (a plain wallet balance) → WALLET_BALANCE_CHECK_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_METRIC_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_METRIC_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_METRIC_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_METRIC_VERIFY_GENERAL)
 
 **`WASH_TRADING_DETECTION`** — judgment family · tier mandatory · H2 missions: Exchange, Asset Management, Web3 Native & DeFi
 
@@ -335,7 +336,7 @@ deterministic · asks `asset` · answers `attested_reserve`, `asset`, `block`, `
 
 Query names a stablecoin, tokenized asset or custodian and asks whether attested reserves back the circulating supply, cross-checking on-chain balances against a custodian or proof-of-reserves feed. Example: "Do the attested reserves behind USDC cover its circulating supply as of the latest proof-of-reserves report?" → ASSET_RESERVE_ATTESTATION_GENERAL. Not: "What is USDC trading at?" (a price) → CRYPTO_PRICE_USD. Not: "How much USDC does this address hold?" (one address's balance) → WALLET_BALANCE_CHECK_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ASSET_RESERVE_ATTESTATION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ASSET_RESERVE_ATTESTATION_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ASSET_RESERVE_ATTESTATION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ASSET_RESERVE_ATTESTATION_GENERAL)
 
 **`CRYPTO_TRANSFER_VERIFY`** — judgment family · tier existing · H2 missions: Web3 Native & DeFi
 
@@ -347,7 +348,7 @@ deterministic
 
 Verifies on-chain transaction status, gas fee burn, sender/recipient addresses, and block confirmations.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_TRANSFER_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_TRANSFER_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_TRANSFER_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_TRANSFER_VERIFY_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -375,7 +376,7 @@ deterministic · asks `project`, `symbol`, `chain` · answers `supply_apy`
 
 Tracks annualized percentage yields (APY), staking reward rates, and lending pool yields across DeFi protocols.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_YIELD_RATE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_YIELD_RATE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_YIELD_RATE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_YIELD_RATE_GENERAL)
 
 **`TOKEN_TOTAL_SUPPLY_VERIFY`** — judgment family · tier existing · H2 missions: Exchange
 
@@ -387,7 +388,7 @@ deterministic · asks `token` · answers `total_supply`
 
 Verifies token circulating supply, burnt token balances, and total minted token counts on-chain.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL)
 
 Not usable in an on-chain job yet: number field "total_supply" has no decimals.
 
@@ -401,13 +402,13 @@ deterministic · asks `validator_index` · answers `effective_balance`
 
 Query names a validator, index or staking operator on a proof-of-stake network and asks for its uptime, attestation or proposal rate, slashing history or staking yield. Example: "What is the attestation effectiveness and uptime of validator index 412903 over the last 30 days, and has it ever been slashed?" → VALIDATOR_PERFORMANCE_VERIFY_GENERAL. Not: "What is the current gas price on ethereum?" (network fee level) → GAS_PRICE_GENERAL. Not: "What does a unit of hashrate earn today?" (proof-of-work mining economics) → MINING_HASHPRICE_VERIFY_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=VALIDATOR_PERFORMANCE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+VALIDATOR_PERFORMANCE_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=VALIDATOR_PERFORMANCE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+VALIDATOR_PERFORMANCE_VERIFY_GENERAL)
 
 ## Climate & Weather
 
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
-| [`AIR_QUALITY_INDEX_GENERAL`](https://anjoman.ai/dashboard/eval?intent=AIR_QUALITY_INDEX_GENERAL) | deterministic | `AIR_QUALITY_INDEX` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+AIR_QUALITY_INDEX_GENERAL) |
+| [`AIR_QUALITY_INDEX_GENERAL`](https://anjoman.ai/dashboard/eval?intent=AIR_QUALITY_INDEX_GENERAL) | deterministic | `AIR_QUALITY_INDEX` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+AIR_QUALITY_INDEX_GENERAL) |
 | [`WEATHER_FORECAST_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WEATHER_FORECAST_VERIFY_GENERAL) | judgment | `WEATHER_FORECAST_VERIFY` (judgment) | question pairs · adapter on `WEATHER_FORECAST_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_FORECAST_VERIFY_GENERAL) |
 
 ### Details
@@ -422,7 +423,7 @@ deterministic
 
 Aggregates particulate matter (PM2.5/PM10), ground ozone, and composite AQI metrics from monitoring stations.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=AIR_QUALITY_INDEX_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+AIR_QUALITY_INDEX_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=AIR_QUALITY_INDEX_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+AIR_QUALITY_INDEX_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -443,8 +444,8 @@ Contribute question pairs · adapter on `WEATHER_FORECAST_VERIFY`. [Add it on An
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
 | [`COMMERCE_PURCHASE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=COMMERCE_PURCHASE_VERIFY_GENERAL) | judgment | `COMMERCE_PURCHASE_VERIFY` (judgment) | question pairs · adapter on `COMMERCE_PURCHASE_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+COMMERCE_PURCHASE_VERIFY_GENERAL) |
-| [`LIVE_SHELF_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LIVE_SHELF_PRICE_GENERAL) | deterministic | `LIVE_SHELF_PRICE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+LIVE_SHELF_PRICE_GENERAL) |
-| [`SKU_IN_STOCK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SKU_IN_STOCK_GENERAL) | deterministic | `SKU_IN_STOCK` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+SKU_IN_STOCK_GENERAL) |
+| [`LIVE_SHELF_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LIVE_SHELF_PRICE_GENERAL) | deterministic | `LIVE_SHELF_PRICE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+LIVE_SHELF_PRICE_GENERAL) |
+| [`SKU_IN_STOCK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SKU_IN_STOCK_GENERAL) | deterministic | `SKU_IN_STOCK` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+SKU_IN_STOCK_GENERAL) |
 | [`PURCHASE_ORDER_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PURCHASE_ORDER_VERIFY_GENERAL) | judgment | `PURCHASE_ORDER_VERIFY` (judgment) | question pairs · adapter on `PURCHASE_ORDER_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+PURCHASE_ORDER_VERIFY_GENERAL) |
 | [`VENDOR_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VENDOR_VERIFY_GENERAL) | judgment | `VENDOR_VERIFY` (judgment) | question pairs · adapter on `VENDOR_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+VENDOR_VERIFY_GENERAL) |
 | [`PRODUCT_AUTHENTICITY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PRODUCT_AUTHENTICITY_GENERAL) | judgment | `PRODUCT_AUTHENTICITY` (judgment) | question pairs · adapter on `PRODUCT_AUTHENTICITY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+PRODUCT_AUTHENTICITY_GENERAL) |
@@ -475,7 +476,7 @@ deterministic · asks `product`, `store` · answers `price`, `currency`, `produc
 
 Query names a retail product, SKU or listing and asks what it currently sells for at one or more merchants. Example: "What is the current listed price of the Sony WH-1000XM5 at Amazon and Walmart right now?" → LIVE_SHELF_PRICE_GENERAL. Not: "What is Sony's share price?" (an equity quote) → STOCK_PRICE_US_EQUITY. Not: "Is that model actually in stock?" (availability, not price) → SKU_IN_STOCK_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LIVE_SHELF_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LIVE_SHELF_PRICE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LIVE_SHELF_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LIVE_SHELF_PRICE_GENERAL)
 
 **`SKU_IN_STOCK`** — judgment family · tier mandatory · H2 missions: Consumer Platform, Consumer Automation
 
@@ -487,7 +488,7 @@ deterministic
 
 Query names a product, SKU or listing and asks whether it is purchasable right now, in what quantity, or at which location. Example: "Is SKU B09XS7JWHH in stock for delivery to 94107 today, and how many units are left?" → SKU_IN_STOCK_GENERAL. Not: "What does that SKU cost?" (a price, not availability) → LIVE_SHELF_PRICE_GENERAL. Not: "How many units of that SKU sit in bin 14C of our fulfilment centre?" (internal warehouse counts) → WAREHOUSE_INVENTORY_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SKU_IN_STOCK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SKU_IN_STOCK_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SKU_IN_STOCK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SKU_IN_STOCK_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -561,8 +562,8 @@ Contribute question pairs · adapter on `SHIP_RATE_ETA`. [Add it on Anjoman](htt
 | [`THREAT_INTELLIGENCE_INDICATOR`](https://anjoman.ai/dashboard/eval?intent=THREAT_INTELLIGENCE_INDICATOR) | hybrid | `THREAT_INTELLIGENCE` (hybrid) | truth sources and question pairs · adapter on `THREAT_INTELLIGENCE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+THREAT_INTELLIGENCE_INDICATOR) |
 | [`THREAT_IP_REPUTATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=THREAT_IP_REPUTATION_GENERAL) | judgment | `THREAT_IP_REPUTATION` (judgment) | question pairs · adapter on `THREAT_IP_REPUTATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+THREAT_IP_REPUTATION_GENERAL) |
 | [`URL_SAFE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=URL_SAFE_GENERAL) | judgment | `URL_SAFE` (judgment) | question pairs · adapter on `URL_SAFE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+URL_SAFE_GENERAL) |
-| [`DNS_RECORD_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DNS_RECORD_LOOKUP_GENERAL) | deterministic | `DNS_RECORD_LOOKUP` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+DNS_RECORD_LOOKUP_GENERAL) |
-| [`PORT_SCAN_AUDIT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PORT_SCAN_AUDIT_GENERAL) | deterministic | `PORT_SCAN_AUDIT` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+PORT_SCAN_AUDIT_GENERAL) |
+| [`DNS_RECORD_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DNS_RECORD_LOOKUP_GENERAL) | deterministic | `DNS_RECORD_LOOKUP` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+DNS_RECORD_LOOKUP_GENERAL) |
+| [`PORT_SCAN_AUDIT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PORT_SCAN_AUDIT_GENERAL) | deterministic | `PORT_SCAN_AUDIT` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+PORT_SCAN_AUDIT_GENERAL) |
 
 ### Details
 
@@ -650,7 +651,7 @@ deterministic · asks `name`, `record_type` · answers `has_record`
 
 Resolves and validates authoritative DNS records (A, AAAA, CNAME, MX, TXT) across global resolvers.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=DNS_RECORD_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+DNS_RECORD_LOOKUP_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=DNS_RECORD_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+DNS_RECORD_LOOKUP_GENERAL)
 
 **`PORT_SCAN_AUDIT`** — judgment family · tier existing · H2 missions: —
 
@@ -662,7 +663,7 @@ deterministic
 
 Identifies open network service ports, banner disclosures, and listening daemon protocols on specified hosts.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PORT_SCAN_AUDIT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PORT_SCAN_AUDIT_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PORT_SCAN_AUDIT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PORT_SCAN_AUDIT_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -672,8 +673,8 @@ Not usable in an on-chain job yet: the intent has no response format.
 |---|---|---|---|---|
 | [`CLOUD_RESOURCE_USAGE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CLOUD_RESOURCE_USAGE_GENERAL) | judgment | `CLOUD_RESOURCE_USAGE` (judgment) | question pairs · adapter on `CLOUD_RESOURCE_USAGE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CLOUD_RESOURCE_USAGE_GENERAL) |
 | [`DATACENTER_TELEMETRY_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DATACENTER_TELEMETRY_VERIFY_GENERAL) | judgment | `DATACENTER_TELEMETRY_VERIFY` (judgment) | question pairs · adapter on `DATACENTER_TELEMETRY_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+DATACENTER_TELEMETRY_VERIFY_GENERAL) |
-| [`GRID_POWER_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GRID_POWER_PRICE_GENERAL) | deterministic | `GRID_POWER_PRICE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+GRID_POWER_PRICE_GENERAL) |
-| [`MINING_HASHPRICE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=MINING_HASHPRICE_VERIFY_GENERAL) | deterministic | `MINING_HASHPRICE_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+MINING_HASHPRICE_VERIFY_GENERAL) |
+| [`GRID_POWER_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GRID_POWER_PRICE_GENERAL) | deterministic | `GRID_POWER_PRICE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+GRID_POWER_PRICE_GENERAL) |
+| [`MINING_HASHPRICE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=MINING_HASHPRICE_VERIFY_GENERAL) | deterministic | `MINING_HASHPRICE_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+MINING_HASHPRICE_VERIFY_GENERAL) |
 
 ### Details
 
@@ -713,7 +714,7 @@ deterministic · asks `node_or_zone`, `interval_start` · answers `lmp_usd_per_m
 
 Query names a grid, node, hub or region and asks for electricity prices from the operator: locational marginal price, day-ahead or real-time spot rates. Example: "What is the current locational marginal price at the ERCOT Houston hub, and what did day-ahead settle at?" → GRID_POWER_PRICE_GENERAL. Not: "What is a token or commodity trading at?" (market instrument prices) → CRYPTO_PRICE_USD or FINANCIAL_DATA_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GRID_POWER_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GRID_POWER_PRICE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GRID_POWER_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GRID_POWER_PRICE_GENERAL)
 
 **`MINING_HASHPRICE_VERIFY`** — judgment family · tier mandatory · H2 missions: Mining & Power
 
@@ -725,7 +726,7 @@ deterministic · asks `block_height` · answers `hashprice_sats_per_ph_day`, `bl
 
 Query asks what a unit of hashing power currently earns on a proof-of-work network, derived from block reward, fees and network difficulty. Example: "What is Bitcoin hashprice per PH/s per day at current difficulty and fee levels?" → MINING_HASHPRICE_VERIFY_GENERAL. Not: "What is Bitcoin trading at?" (an asset quote) → CRYPTO_PRICE_USD. Not: "What is power costing at that hub?" (electricity prices) → GRID_POWER_PRICE_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=MINING_HASHPRICE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+MINING_HASHPRICE_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=MINING_HASHPRICE_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+MINING_HASHPRICE_VERIFY_GENERAL)
 
 ## Enterprise Operations
 
@@ -735,9 +736,9 @@ Contribute truth sources · no module (see above). [Add it on Anjoman](https://a
 | [`CONTRACT_OBLIGATION_AUDIT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CONTRACT_OBLIGATION_AUDIT_GENERAL) | judgment | `CONTRACT_OBLIGATION_AUDIT` (judgment) | question pairs · adapter on `CONTRACT_OBLIGATION_AUDIT` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CONTRACT_OBLIGATION_AUDIT_GENERAL) |
 | [`DOCUMENT_AUTHENTICITY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DOCUMENT_AUTHENTICITY_GENERAL) | judgment | `DOCUMENT_AUTHENTICITY` (judgment) | question pairs · adapter on `DOCUMENT_AUTHENTICITY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+DOCUMENT_AUTHENTICITY_GENERAL) |
 | [`INVOICE_LEDGER_RECONCILE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=INVOICE_LEDGER_RECONCILE_GENERAL) | judgment | `INVOICE_LEDGER_RECONCILE` (judgment) | question pairs · adapter on `INVOICE_LEDGER_RECONCILE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+INVOICE_LEDGER_RECONCILE_GENERAL) |
-| [`API_HEALTH_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=API_HEALTH_CHECK_GENERAL) | deterministic | `API_HEALTH_CHECK` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+API_HEALTH_CHECK_GENERAL) |
+| [`API_HEALTH_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=API_HEALTH_CHECK_GENERAL) | deterministic | `API_HEALTH_CHECK` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+API_HEALTH_CHECK_GENERAL) |
 | [`CUSTOMER_TICKET_RESOLUTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CUSTOMER_TICKET_RESOLUTION_GENERAL) | judgment | `CUSTOMER_TICKET_RESOLUTION` (judgment) | question pairs · adapter on `CUSTOMER_TICKET_RESOLUTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CUSTOMER_TICKET_RESOLUTION_GENERAL) |
-| [`SERVER_UPTIME_MONITOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SERVER_UPTIME_MONITOR_GENERAL) | deterministic | `SERVER_UPTIME_MONITOR` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+SERVER_UPTIME_MONITOR_GENERAL) |
+| [`SERVER_UPTIME_MONITOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SERVER_UPTIME_MONITOR_GENERAL) | deterministic | `SERVER_UPTIME_MONITOR` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+SERVER_UPTIME_MONITOR_GENERAL) |
 | [`SLA_COMPLIANCE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SLA_COMPLIANCE_GENERAL) | judgment | `SLA_COMPLIANCE` (judgment) | question pairs · adapter on `SLA_COMPLIANCE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+SLA_COMPLIANCE_GENERAL) |
 
 ### Details
@@ -800,7 +801,7 @@ deterministic
 
 Verifies REST/GraphQL API responsiveness, JSON schema payload structure, and HTTP status codes.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=API_HEALTH_CHECK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+API_HEALTH_CHECK_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=API_HEALTH_CHECK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+API_HEALTH_CHECK_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -826,7 +827,7 @@ deterministic
 
 Monitors synthetic HTTP/HTTPS endpoint availability, handshake latency, and uptime status from multiple edge regions.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SERVER_UPTIME_MONITOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SERVER_UPTIME_MONITOR_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SERVER_UPTIME_MONITOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SERVER_UPTIME_MONITOR_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -848,14 +849,14 @@ Contribute question pairs · adapter on `SLA_COMPLIANCE`. [Add it on Anjoman](ht
 |---|---|---|---|---|
 | [`OPTIMAL_EXECUTION_ROUTE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=OPTIMAL_EXECUTION_ROUTE_GENERAL) | judgment | `OPTIMAL_EXECUTION_ROUTE` (judgment) | question pairs · adapter on `OPTIMAL_EXECUTION_ROUTE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+OPTIMAL_EXECUTION_ROUTE_GENERAL) |
 | [`FRAUD_RISK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FRAUD_RISK_GENERAL) | judgment | `FRAUD_RISK` (judgment) | question pairs · adapter on `FRAUD_RISK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+FRAUD_RISK_GENERAL) |
-| [`PAYMENT_METHOD_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PAYMENT_METHOD_VERIFY_GENERAL) | deterministic | `PAYMENT_METHOD_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+PAYMENT_METHOD_VERIFY_GENERAL) |
+| [`PAYMENT_METHOD_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PAYMENT_METHOD_VERIFY_GENERAL) | deterministic | `PAYMENT_METHOD_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+PAYMENT_METHOD_VERIFY_GENERAL) |
 | [`TRANSACTION_RISK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TRANSACTION_RISK_GENERAL) | judgment | `TRANSACTION_RISK` (judgment) | question pairs · adapter on `TRANSACTION_RISK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TRANSACTION_RISK_GENERAL) |
-| [`FX_NOW_CAD`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_CAD) | deterministic | `FX_NOW` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_CAD) |
-| [`FX_NOW_EUR`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_EUR) | deterministic | `FX_NOW` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_EUR) |
-| [`FX_NOW_SEK`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_SEK) | deterministic | `FX_NOW` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_SEK) |
+| [`FX_NOW_CAD`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_CAD) | deterministic | `FX_NOW` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_CAD) |
+| [`FX_NOW_EUR`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_EUR) | deterministic | `FX_NOW` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_EUR) |
+| [`FX_NOW_SEK`](https://anjoman.ai/dashboard/eval?intent=FX_NOW_SEK) | deterministic | `FX_NOW` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_SEK) |
 | [`CREDIT_SCORE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CREDIT_SCORE_VERIFY_GENERAL) | judgment | `CREDIT_SCORE_VERIFY` (judgment) | question pairs · adapter on `CREDIT_SCORE_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CREDIT_SCORE_VERIFY_GENERAL) |
-| [`CURRENCY_EXCHANGE_CONVERT`](https://anjoman.ai/dashboard/eval?intent=CURRENCY_EXCHANGE_CONVERT) | deterministic | `CURRENCY_EXCHANGE` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+CURRENCY_EXCHANGE_CONVERT) |
-| [`LOAN_INTEREST_RATE_QUOTE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LOAN_INTEREST_RATE_QUOTE_GENERAL) | deterministic | `LOAN_INTEREST_RATE_QUOTE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+LOAN_INTEREST_RATE_QUOTE_GENERAL) |
+| [`CURRENCY_EXCHANGE_CONVERT`](https://anjoman.ai/dashboard/eval?intent=CURRENCY_EXCHANGE_CONVERT) | deterministic | `CURRENCY_EXCHANGE` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CURRENCY_EXCHANGE_CONVERT) |
+| [`LOAN_INTEREST_RATE_QUOTE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LOAN_INTEREST_RATE_QUOTE_GENERAL) | deterministic | `LOAN_INTEREST_RATE_QUOTE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+LOAN_INTEREST_RATE_QUOTE_GENERAL) |
 
 ### Details
 
@@ -893,7 +894,7 @@ deterministic · asks `bin` · answers `network`, `issuing_bank`, `issuing_count
 
 Query supplies a card BIN, payment token, bank account or routing number and asks whether it is valid, active and issued by the stated institution. Example: "Is BIN 411111 a valid Visa, which issuer does it belong to, and is routing number 021000021 an active ACH route?" → PAYMENT_METHOD_VERIFY_GENERAL. Not: "Does this $2,400 purchase look like it will charge back?" (a risk score on a transaction) → TRANSACTION_RISK_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PAYMENT_METHOD_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PAYMENT_METHOD_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PAYMENT_METHOD_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PAYMENT_METHOD_VERIFY_GENERAL)
 
 **`TRANSACTION_RISK`** — judgment family · tier mandatory · H2 missions: Stablecoin, Mining & Power
 
@@ -917,7 +918,7 @@ deterministic · asks `currency` · answers `rate`
 
 Query asks for the live institutional mid-market rate between the US dollar and the Canadian dollar (USD/CAD or CAD/USD), as a market data point with no amount to convert. Example: "What is the current USD/CAD mid-market rate?" → FX_NOW_CAD. Not: a pair without both USD and CAD (another FX_NOW_ intent). Not: "How much is 100 USD in CAD?" (a conversion of a stated amount for a user).
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_CAD) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_CAD)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_CAD) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_CAD)
 
 #### `FX_NOW_EUR`
 
@@ -925,7 +926,7 @@ deterministic · asks `currency` · answers `rate`
 
 Query asks for the live institutional mid-market rate between the US dollar and the euro (USD/EUR or EUR/USD), as a market data point with no amount to convert. Example: "What is the current EUR/USD mid-market rate?" → FX_NOW_EUR. Not: a pair without both USD and EUR (another FX_NOW_ intent). Not: "How much is 100 USD in EUR?" (a conversion of a stated amount for a user).
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_EUR) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_EUR)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_EUR) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_EUR)
 
 #### `FX_NOW_SEK`
 
@@ -933,7 +934,7 @@ deterministic · asks `currency` · answers `rate`
 
 Query asks for the live institutional mid-market rate between the US dollar and the Swedish krona (USD/SEK or SEK/USD), as a market data point with no amount to convert. Example: "What is the current USD/SEK mid-market rate?" → FX_NOW_SEK. Not: a pair without both USD and SEK (another FX_NOW_ intent). Not: "How much is 100 USD in SEK?" (a conversion of a stated amount for a user).
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_SEK) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_SEK)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FX_NOW_SEK) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FX_NOW_SEK)
 
 **`CREDIT_SCORE_VERIFY`** — judgment family · tier existing · H2 missions: —
 
@@ -959,7 +960,7 @@ deterministic · asks `from_currency`, `to_currency`, `amount` · answers `conve
 
 Query asks to convert a stated amount between two currencies at today's rate. Example: "What is 100 USD in EUR right now?" → CURRENCY_EXCHANGE_CONVERT. Not: the bare rate with no amount to convert (FX_NOW_EUR, FX_NOW_CAD, FX_NOW_SEK). Not: a single asset's price with no second currency → CRYPTO_PRICE_USD or STOCK_PRICE_US_EQUITY.
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CURRENCY_EXCHANGE_CONVERT) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CURRENCY_EXCHANGE_CONVERT)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CURRENCY_EXCHANGE_CONVERT) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CURRENCY_EXCHANGE_CONVERT)
 
 Not usable in an on-chain job yet: number field "converted_amount" has no decimals.
 
@@ -973,7 +974,7 @@ deterministic · asks `rate` · answers `rate_pct`
 
 Aggregates residential mortgage APRs, prime lending rates, and personal loan interest quotes.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LOAN_INTEREST_RATE_QUOTE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LOAN_INTEREST_RATE_QUOTE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=LOAN_INTEREST_RATE_QUOTE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+LOAN_INTEREST_RATE_QUOTE_GENERAL)
 
 Not usable in an on-chain job yet: number field "rate_pct" has no decimals.
 
@@ -1023,8 +1024,8 @@ Contribute question pairs · adapter on `SENSOR_TELEMETRY_VERIFY`. [Add it on An
 |---|---|---|---|---|
 | [`KYC_BIOMETRIC_LIVENESS_GENERAL`](https://anjoman.ai/dashboard/eval?intent=KYC_BIOMETRIC_LIVENESS_GENERAL) | judgment | `KYC_BIOMETRIC_LIVENESS` (judgment) | question pairs · adapter on `KYC_BIOMETRIC_LIVENESS` | [open](../../../issues?q=is%3Aissue+is%3Aopen+KYC_BIOMETRIC_LIVENESS_GENERAL) |
 | [`SANCTIONS_SCREENING_MATCH_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SANCTIONS_SCREENING_MATCH_GENERAL) | judgment | `SANCTIONS_SCREENING_MATCH` (judgment) | question pairs · adapter on `SANCTIONS_SCREENING_MATCH` | [open](../../../issues?q=is%3Aissue+is%3Aopen+SANCTIONS_SCREENING_MATCH_GENERAL) |
-| [`CORPORATE_REGISTRY_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CORPORATE_REGISTRY_LOOKUP_GENERAL) | deterministic | `CORPORATE_REGISTRY_LOOKUP` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+CORPORATE_REGISTRY_LOOKUP_GENERAL) |
-| [`REGULATORY_FILING_MONITOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=REGULATORY_FILING_MONITOR_GENERAL) | deterministic | `REGULATORY_FILING_MONITOR` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+REGULATORY_FILING_MONITOR_GENERAL) |
+| [`CORPORATE_REGISTRY_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CORPORATE_REGISTRY_LOOKUP_GENERAL) | deterministic | `CORPORATE_REGISTRY_LOOKUP` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CORPORATE_REGISTRY_LOOKUP_GENERAL) |
+| [`REGULATORY_FILING_MONITOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=REGULATORY_FILING_MONITOR_GENERAL) | deterministic | `REGULATORY_FILING_MONITOR` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+REGULATORY_FILING_MONITOR_GENERAL) |
 
 ### Details
 
@@ -1062,7 +1063,7 @@ deterministic · asks `company`, `jurisdiction` · answers `legal_name`, `regist
 
 Query names a company and asks for its official register record: incorporation status, company number, registered address or agent, directors, beneficial owners. Example: "What is the incorporation status and registered agent for UK company number 12345678?" → CORPORATE_REGISTRY_LOOKUP_GENERAL. Not: "Fill out this company record with its tax ID, headcount and executive contacts." (commercial enrichment beyond the register) → B2B_IDENTITY_ENRICHMENT_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CORPORATE_REGISTRY_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CORPORATE_REGISTRY_LOOKUP_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CORPORATE_REGISTRY_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CORPORATE_REGISTRY_LOOKUP_GENERAL)
 
 **`REGULATORY_FILING_MONITOR`** — judgment family · tier mandatory · H2 missions: Legal, Asset Management
 
@@ -1074,7 +1075,7 @@ deterministic · asks `entity`, `period` · answers `entity`, `filing_count`, `f
 
 Query names an issuer, ticker or regulator and asks whether a specific statutory filing has appeared, or for what it contains: 10-K, 10-Q, 8-K, exchange disclosures. Example: "Has Tesla filed its latest 10-Q on SEC EDGAR, on what date was it accepted, and what did it disclose about margins?" → REGULATORY_FILING_MONITOR_GENERAL. Not: "What is Tesla's P/E ratio?" (market data, not the filing) → FINANCIAL_DATA_GENERAL. Not: "Is Tesla Inc registered and who are its directors?" (a company register record) → CORPORATE_REGISTRY_LOOKUP_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=REGULATORY_FILING_MONITOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+REGULATORY_FILING_MONITOR_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=REGULATORY_FILING_MONITOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+REGULATORY_FILING_MONITOR_GENERAL)
 
 ## Logistics
 
@@ -1082,7 +1083,7 @@ Contribute truth sources · no module (see above). [Add it on Anjoman](https://a
 |---|---|---|---|---|
 | [`CARRIER_SERVICEABILITY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CARRIER_SERVICEABILITY_GENERAL) | judgment | `CARRIER_SERVICEABILITY` (judgment) | question pairs · adapter on `CARRIER_SERVICEABILITY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CARRIER_SERVICEABILITY_GENERAL) |
 | [`DELIVERY_WINDOW_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DELIVERY_WINDOW_VERIFY_GENERAL) | judgment | `DELIVERY_WINDOW_VERIFY` (judgment) | question pairs · adapter on `DELIVERY_WINDOW_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+DELIVERY_WINDOW_VERIFY_GENERAL) |
-| [`PACKAGE_STATUS_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PACKAGE_STATUS_GENERAL) | deterministic | `PACKAGE_STATUS` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+PACKAGE_STATUS_GENERAL) |
+| [`PACKAGE_STATUS_GENERAL`](https://anjoman.ai/dashboard/eval?intent=PACKAGE_STATUS_GENERAL) | deterministic | `PACKAGE_STATUS` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+PACKAGE_STATUS_GENERAL) |
 | [`SHIPMENT_DELAY_RISK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SHIPMENT_DELAY_RISK_GENERAL) | judgment | `SHIPMENT_DELAY_RISK` (judgment) | question pairs · adapter on `SHIPMENT_DELAY_RISK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+SHIPMENT_DELAY_RISK_GENERAL) |
 | [`WAREHOUSE_INVENTORY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WAREHOUSE_INVENTORY_GENERAL) | judgment | `WAREHOUSE_INVENTORY` (judgment) | question pairs · adapter on `WAREHOUSE_INVENTORY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+WAREHOUSE_INVENTORY_GENERAL) |
 
@@ -1122,7 +1123,7 @@ deterministic
 
 Query supplies a tracking number or shipment reference and asks where the parcel is and what its latest carrier scan events are. Example: "Where is tracking number 1Z999AA10123456784 now, and what was the last scan event?" → PACKAGE_STATUS_GENERAL. Not: "What would it cost to ship this and when would it arrive?" (a quote for a parcel not yet sent) → SHIP_RATE_ETA_GENERAL. Not: "What appointment window did dispatch commit for this stop?" (the dispatch schedule) → DELIVERY_WINDOW_VERIFY_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PACKAGE_STATUS_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PACKAGE_STATUS_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=PACKAGE_STATUS_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+PACKAGE_STATUS_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -1155,7 +1156,7 @@ Contribute question pairs · adapter on `WAREHOUSE_INVENTORY`. [Add it on Anjoma
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
 | [`LIVE_PORT_CONGESTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LIVE_PORT_CONGESTION_GENERAL) | judgment | `LIVE_PORT_CONGESTION` (judgment) | question pairs · adapter on `LIVE_PORT_CONGESTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+LIVE_PORT_CONGESTION_GENERAL) |
-| [`VESSEL_TELEMETRY_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VESSEL_TELEMETRY_VERIFY_GENERAL) | deterministic | `VESSEL_TELEMETRY_VERIFY` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+VESSEL_TELEMETRY_VERIFY_GENERAL) |
+| [`VESSEL_TELEMETRY_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VESSEL_TELEMETRY_VERIFY_GENERAL) | deterministic | `VESSEL_TELEMETRY_VERIFY` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+VESSEL_TELEMETRY_VERIFY_GENERAL) |
 
 ### Details
 
@@ -1181,7 +1182,7 @@ deterministic
 
 Query names a vessel by name, MMSI or IMO and asks for its AIS-reported position, speed, heading, draft or declared destination. Example: "What is the current AIS position, speed and draft of MMSI 636019825?" → VESSEL_TELEMETRY_VERIFY_GENERAL. Not: "How backed up is the port it is heading into?" (port-level congestion) → LIVE_PORT_CONGESTION_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=VESSEL_TELEMETRY_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+VESSEL_TELEMETRY_VERIFY_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=VESSEL_TELEMETRY_VERIFY_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+VESSEL_TELEMETRY_VERIFY_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -1189,7 +1190,7 @@ Not usable in an on-chain job yet: the intent has no response format.
 
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
-| [`MACRO_ECONOMIC_INDICATOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=MACRO_ECONOMIC_INDICATOR_GENERAL) | deterministic | `MACRO_ECONOMIC_INDICATOR` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+MACRO_ECONOMIC_INDICATOR_GENERAL) |
+| [`MACRO_ECONOMIC_INDICATOR_GENERAL`](https://anjoman.ai/dashboard/eval?intent=MACRO_ECONOMIC_INDICATOR_GENERAL) | deterministic | `MACRO_ECONOMIC_INDICATOR` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+MACRO_ECONOMIC_INDICATOR_GENERAL) |
 
 ### Details
 
@@ -1203,7 +1204,7 @@ deterministic · asks `indicator`, `country`, `year` · answers `rate_pct`
 
 Query names a published macroeconomic statistic for a country or region - policy rate, CPI, unemployment, GDP - and asks for its released value or latest print. Example: "What was the latest US CPI year-over-year print, and what is the current federal funds target range?" → MACRO_ECONOMIC_INDICATOR_GENERAL. Not: "What is EUR/USD right now?" (a live market rate) → one of FX_NOW_EUR, FX_NOW_CAD, FX_NOW_SEK. Not: "What is Apple's revenue growth this quarter?" (company fundamentals) → FINANCIAL_DATA_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=MACRO_ECONOMIC_INDICATOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+MACRO_ECONOMIC_INDICATOR_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=MACRO_ECONOMIC_INDICATOR_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+MACRO_ECONOMIC_INDICATOR_GENERAL)
 
 ## Software / Engineering
 
@@ -1311,7 +1312,7 @@ Not usable in an on-chain job yet: the intent has no response format.
 
 | Intent | Kind | Family | Contribute | Bounty |
 |---|---|---|---|---|
-| [`TRAVEL_DISRUPTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TRAVEL_DISRUPTION_GENERAL) | deterministic | `TRAVEL_DISRUPTION` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+TRAVEL_DISRUPTION_GENERAL) |
+| [`TRAVEL_DISRUPTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TRAVEL_DISRUPTION_GENERAL) | deterministic | `TRAVEL_DISRUPTION` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+TRAVEL_DISRUPTION_GENERAL) |
 | [`FARE_RULE_VERIFY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FARE_RULE_VERIFY_GENERAL) | judgment | `FARE_RULE_VERIFY` (judgment) | question pairs · adapter on `FARE_RULE_VERIFY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+FARE_RULE_VERIFY_GENERAL) |
 | [`FLIGHT_AVAILABILITY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FLIGHT_AVAILABILITY_GENERAL) | judgment | `FLIGHT_AVAILABILITY` (judgment) | question pairs · adapter on `FLIGHT_AVAILABILITY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+FLIGHT_AVAILABILITY_GENERAL) |
 | [`HOTEL_AVAILABILITY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=HOTEL_AVAILABILITY_GENERAL) | judgment | `HOTEL_AVAILABILITY` (judgment) | question pairs · adapter on `HOTEL_AVAILABILITY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+HOTEL_AVAILABILITY_GENERAL) |
@@ -1330,7 +1331,7 @@ deterministic · asks `route_or_flight` · answers `route_or_flight`, `disrupted
 
 Query names a flight, route or airport and asks about current operational disruption: delays, cancellations, gate changes, ground stops. Example: "Is DL404 delayed today, and is there an FAA ground stop at ATL?" → TRAVEL_DISRUPTION_GENERAL. Not: "Are there seats left on DL404 tomorrow?" (bookable inventory) → FLIGHT_AVAILABILITY_GENERAL. Not: "Will a storm hit Atlanta tomorrow?" (weather at a location, no flight operations) → STORM_ALERT_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TRAVEL_DISRUPTION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TRAVEL_DISRUPTION_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TRAVEL_DISRUPTION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TRAVEL_DISRUPTION_GENERAL)
 
 **`FARE_RULE_VERIFY`** — judgment family · tier mandatory · H2 missions: —
 
@@ -1451,38 +1452,38 @@ Contribute question pairs · adapter on `SOCIAL_BOT_DETECTION`. [Add it on Anjom
 | [`CONTENT_EXTRACTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CONTENT_EXTRACTION_GENERAL) | judgment | `CONTENT_EXTRACTION` (judgment) | question pairs · adapter on `CONTENT_EXTRACTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CONTENT_EXTRACTION_GENERAL) |
 | [`CONTENT_MODERATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CONTENT_MODERATION_GENERAL) | judgment | `CONTENT_MODERATION` (judgment) | question pairs · adapter on `CONTENT_MODERATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CONTENT_MODERATION_GENERAL) |
 | [`CONTENT_VERIFICATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=CONTENT_VERIFICATION_GENERAL) | judgment | `CONTENT_VERIFICATION` (judgment) | question pairs · adapter on `CONTENT_VERIFICATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+CONTENT_VERIFICATION_GENERAL) |
-| [`CRYPTO_PRICE_USD`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_PRICE_USD) | deterministic | `CRYPTO_PRICE` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_PRICE_USD) |
-| [`CVE_LOOKUP_CVSS`](https://anjoman.ai/dashboard/eval?intent=CVE_LOOKUP_CVSS) | deterministic | `CVE_LOOKUP` (hybrid) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+CVE_LOOKUP_CVSS) |
+| [`CRYPTO_PRICE_USD`](https://anjoman.ai/dashboard/eval?intent=CRYPTO_PRICE_USD) | deterministic | `CRYPTO_PRICE` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_PRICE_USD) |
+| [`CVE_LOOKUP_CVSS`](https://anjoman.ai/dashboard/eval?intent=CVE_LOOKUP_CVSS) | deterministic | `CVE_LOOKUP` (hybrid) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+CVE_LOOKUP_CVSS) |
 | [`DEEPFAKE_DETECTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=DEEPFAKE_DETECTION_GENERAL) | judgment | `DEEPFAKE_DETECTION` (judgment) | question pairs · adapter on `DEEPFAKE_DETECTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+DEEPFAKE_DETECTION_GENERAL) |
 | [`FACT_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FACT_CHECK_GENERAL) | judgment | `FACT_CHECK` (judgment) | question pairs · adapter on `FACT_CHECK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+FACT_CHECK_GENERAL) |
-| [`FINANCIAL_DATA_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FINANCIAL_DATA_GENERAL) | deterministic | `FINANCIAL_DATA` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+FINANCIAL_DATA_GENERAL) |
+| [`FINANCIAL_DATA_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FINANCIAL_DATA_GENERAL) | deterministic | `FINANCIAL_DATA` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+FINANCIAL_DATA_GENERAL) |
 | [`FRAUD_DETECTION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=FRAUD_DETECTION_GENERAL) | judgment | `FRAUD_DETECTION` (judgment) | question pairs · adapter on `FRAUD_DETECTION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+FRAUD_DETECTION_GENERAL) |
-| [`GAME_RESULT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GAME_RESULT_GENERAL) | deterministic | `GAME_RESULT` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+GAME_RESULT_GENERAL) |
-| [`GAS_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GAS_PRICE_GENERAL) | deterministic | `GAS_PRICE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+GAS_PRICE_GENERAL) |
+| [`GAME_RESULT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GAME_RESULT_GENERAL) | deterministic | `GAME_RESULT` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+GAME_RESULT_GENERAL) |
+| [`GAS_PRICE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=GAS_PRICE_GENERAL) | deterministic | `GAS_PRICE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+GAS_PRICE_GENERAL) |
 | [`IMAGE_VERIFICATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=IMAGE_VERIFICATION_GENERAL) | judgment | `IMAGE_VERIFICATION` (judgment) | question pairs · adapter on `IMAGE_VERIFICATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+IMAGE_VERIFICATION_GENERAL) |
-| [`IP_GEOLOCATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=IP_GEOLOCATION_GENERAL) | deterministic | `IP_GEOLOCATION` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+IP_GEOLOCATION_GENERAL) |
+| [`IP_GEOLOCATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=IP_GEOLOCATION_GENERAL) | deterministic | `IP_GEOLOCATION` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+IP_GEOLOCATION_GENERAL) |
 | [`LANGUAGE_GENERATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=LANGUAGE_GENERATION_GENERAL) | judgment | `LANGUAGE_GENERATION` (judgment) | question pairs · adapter on `LANGUAGE_GENERATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+LANGUAGE_GENERATION_GENERAL) |
 | [`MEDIA_AUTHENTICITY_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=MEDIA_AUTHENTICITY_CHECK_GENERAL) | judgment | `MEDIA_AUTHENTICITY_CHECK` (judgment) | question pairs · adapter on `MEDIA_AUTHENTICITY_CHECK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+MEDIA_AUTHENTICITY_CHECK_GENERAL) |
 | [`NEWS_HEADLINES_GENERAL`](https://anjoman.ai/dashboard/eval?intent=NEWS_HEADLINES_GENERAL) | judgment | `NEWS_HEADLINES` (judgment) | question pairs · adapter on `NEWS_HEADLINES` | [open](../../../issues?q=is%3Aissue+is%3Aopen+NEWS_HEADLINES_GENERAL) |
 | [`NEWS_SEARCH_GENERAL`](https://anjoman.ai/dashboard/eval?intent=NEWS_SEARCH_GENERAL) | judgment | `NEWS_SEARCH` (judgment) | question pairs · adapter on `NEWS_SEARCH` | [open](../../../issues?q=is%3Aissue+is%3Aopen+NEWS_SEARCH_GENERAL) |
-| [`ONCHAIN_TX_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_TX_LOOKUP_GENERAL) | deterministic | `ONCHAIN_TX_LOOKUP` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_TX_LOOKUP_GENERAL) |
+| [`ONCHAIN_TX_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_TX_LOOKUP_GENERAL) | deterministic | `ONCHAIN_TX_LOOKUP` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_TX_LOOKUP_GENERAL) |
 | [`RESEARCH_QUERY_GENERAL`](https://anjoman.ai/dashboard/eval?intent=RESEARCH_QUERY_GENERAL) | judgment | `RESEARCH_QUERY` (judgment) | question pairs · adapter on `RESEARCH_QUERY` | [open](../../../issues?q=is%3Aissue+is%3Aopen+RESEARCH_QUERY_GENERAL) |
 | [`RESEARCH_SYNTHESIS_GENERAL`](https://anjoman.ai/dashboard/eval?intent=RESEARCH_SYNTHESIS_GENERAL) | judgment | `RESEARCH_SYNTHESIS` (judgment) | question pairs · adapter on `RESEARCH_SYNTHESIS` | [open](../../../issues?q=is%3Aissue+is%3Aopen+RESEARCH_SYNTHESIS_GENERAL) |
-| [`SPORTS_SCORE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SPORTS_SCORE_GENERAL) | deterministic | `SPORTS_SCORE` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+SPORTS_SCORE_GENERAL) |
-| [`SSL_VERIFICATION_CERT`](https://anjoman.ai/dashboard/eval?intent=SSL_VERIFICATION_CERT) | deterministic | `SSL_VERIFICATION` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+SSL_VERIFICATION_CERT) |
-| [`STOCK_PRICE_US_EQUITY`](https://anjoman.ai/dashboard/eval?intent=STOCK_PRICE_US_EQUITY) | deterministic | `STOCK_PRICE` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+STOCK_PRICE_US_EQUITY) |
+| [`SPORTS_SCORE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=SPORTS_SCORE_GENERAL) | deterministic | `SPORTS_SCORE` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+SPORTS_SCORE_GENERAL) |
+| [`SSL_VERIFICATION_CERT`](https://anjoman.ai/dashboard/eval?intent=SSL_VERIFICATION_CERT) | deterministic | `SSL_VERIFICATION` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+SSL_VERIFICATION_CERT) |
+| [`STOCK_PRICE_US_EQUITY`](https://anjoman.ai/dashboard/eval?intent=STOCK_PRICE_US_EQUITY) | deterministic | `STOCK_PRICE` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+STOCK_PRICE_US_EQUITY) |
 | [`STORM_ALERT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=STORM_ALERT_GENERAL) | judgment | `STORM_ALERT` (judgment) | question pairs · adapter on `STORM_ALERT` | [open](../../../issues?q=is%3Aissue+is%3Aopen+STORM_ALERT_GENERAL) |
 | [`TASK_COMPLETION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TASK_COMPLETION_GENERAL) | judgment | `TASK_COMPLETION` (judgment) | question pairs · adapter on `TASK_COMPLETION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TASK_COMPLETION_GENERAL) |
 | [`TELEGRAPH_KNOWLEDGE_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TELEGRAPH_KNOWLEDGE_GENERAL) | judgment | `TELEGRAPH_KNOWLEDGE` (judgment) | question pairs · adapter on `TELEGRAPH_KNOWLEDGE` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TELEGRAPH_KNOWLEDGE_GENERAL) |
 | [`TEXT_AUTHENTICITY_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TEXT_AUTHENTICITY_CHECK_GENERAL) | judgment | `TEXT_AUTHENTICITY_CHECK` (judgment) | question pairs · adapter on `TEXT_AUTHENTICITY_CHECK` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TEXT_AUTHENTICITY_CHECK_GENERAL) |
 | [`TEXT_GENERATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TEXT_GENERATION_GENERAL) | judgment | `TEXT_GENERATION` (judgment) | question pairs · adapter on `TEXT_GENERATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TEXT_GENERATION_GENERAL) |
-| [`TOKEN_HOLDER_COUNT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TOKEN_HOLDER_COUNT_GENERAL) | deterministic | `TOKEN_HOLDER_COUNT` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_HOLDER_COUNT_GENERAL) |
-| [`TVL_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TVL_LOOKUP_GENERAL) | deterministic | `TVL_LOOKUP` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+TVL_LOOKUP_GENERAL) |
+| [`TOKEN_HOLDER_COUNT_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TOKEN_HOLDER_COUNT_GENERAL) | deterministic | `TOKEN_HOLDER_COUNT` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_HOLDER_COUNT_GENERAL) |
+| [`TVL_LOOKUP_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TVL_LOOKUP_GENERAL) | deterministic | `TVL_LOOKUP` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+TVL_LOOKUP_GENERAL) |
 | [`TWITTER_SEARCH_GENERAL`](https://anjoman.ai/dashboard/eval?intent=TWITTER_SEARCH_GENERAL) | judgment | `TWITTER_SEARCH` (judgment) | question pairs · adapter on `TWITTER_SEARCH` | [open](../../../issues?q=is%3Aissue+is%3Aopen+TWITTER_SEARCH_GENERAL) |
 | [`URL_SCAN_VERDICT`](https://anjoman.ai/dashboard/eval?intent=URL_SCAN_VERDICT) | hybrid | `URL_SCAN` (hybrid) | truth sources and question pairs · adapter on `URL_SCAN` | [open](../../../issues?q=is%3Aissue+is%3Aopen+URL_SCAN_VERDICT) |
 | [`VIDEO_VERIFICATION_GENERAL`](https://anjoman.ai/dashboard/eval?intent=VIDEO_VERIFICATION_GENERAL) | judgment | `VIDEO_VERIFICATION` (judgment) | question pairs · adapter on `VIDEO_VERIFICATION` | [open](../../../issues?q=is%3Aissue+is%3Aopen+VIDEO_VERIFICATION_GENERAL) |
-| [`WALLET_BALANCE_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WALLET_BALANCE_CHECK_GENERAL) | deterministic | `WALLET_BALANCE_CHECK` (judgment) | truth sources · no module (see above) | [open](../../../issues?q=is%3Aissue+is%3Aopen+WALLET_BALANCE_CHECK_GENERAL) |
-| [`WEATHER_CHECK_TEMPERATURE`](https://anjoman.ai/dashboard/eval?intent=WEATHER_CHECK_TEMPERATURE) | deterministic | `WEATHER_CHECK` (deterministic) | truth sources · comparator already live | [open](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_CHECK_TEMPERATURE) |
+| [`WALLET_BALANCE_CHECK_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WALLET_BALANCE_CHECK_GENERAL) | deterministic | `WALLET_BALANCE_CHECK` (judgment) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+WALLET_BALANCE_CHECK_GENERAL) |
+| [`WEATHER_CHECK_TEMPERATURE`](https://anjoman.ai/dashboard/eval?intent=WEATHER_CHECK_TEMPERATURE) | deterministic | `WEATHER_CHECK` (deterministic) | truth sources · no adapter | [open](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_CHECK_TEMPERATURE) |
 | [`WEATHER_FORECAST_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WEATHER_FORECAST_GENERAL) | judgment | `WEATHER_FORECAST` (judgment) | question pairs · adapter on `WEATHER_FORECAST` | [open](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_FORECAST_GENERAL) |
 | [`WEB_SEARCH_GENERAL`](https://anjoman.ai/dashboard/eval?intent=WEB_SEARCH_GENERAL) | judgment | `WEB_SEARCH` (judgment) | question pairs · adapter on `WEB_SEARCH` | [open](../../../issues?q=is%3Aissue+is%3Aopen+WEB_SEARCH_GENERAL) |
 
@@ -1566,7 +1567,7 @@ deterministic · asks `symbol` · answers `price_usd`
 
 Query names a cryptocurrency asset and asks for its CURRENT price in US dollars. Example: "What is the current price of Ethereum (ETH) in USD?" → CRYPTO_PRICE_USD. Not: "How much ETH does 0x6872...de hold?" (a balance, not a price) → WALLET_BALANCE_CHECK_GENERAL. Not: market cap or 24h volume (broader market data) → FINANCIAL_DATA_GENERAL.
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_PRICE_USD) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_PRICE_USD)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CRYPTO_PRICE_USD) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CRYPTO_PRICE_USD)
 
 Not usable in an on-chain job yet: number field "price_usd" has no decimals.
 
@@ -1578,7 +1579,7 @@ deterministic · asks `cve_id` · answers `cve_id`, `cvss_score`, `severity`, `d
 
 Query supplies a CVE identifier and asks for its CVSS severity score. Example: "What is the CVSS score of CVE-2021-44228?" → CVE_LOOKUP_CVSS. Not: "What are the most dangerous vulnerabilities this year?" (no CVE identifier) → WEB_SEARCH_GENERAL. Not: ranking a set of findings → VULNERABILITY_TRIAGE_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CVE_LOOKUP_CVSS) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CVE_LOOKUP_CVSS)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=CVE_LOOKUP_CVSS) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+CVE_LOOKUP_CVSS)
 
 **`DEEPFAKE_DETECTION`** — judgment family · tier network · H2 missions: —
 
@@ -1608,7 +1609,7 @@ deterministic · asks `asset` · answers `asset`, `market_cap_usd`, `volume_24h_
 
 Query asks for market data, company fundamentals, or financial statistics beyond a single quoted price. Example: "Give the market cap and 24h trading volume for token X on base." or "What is Apple's P/E ratio and revenue growth this quarter?" → FINANCIAL_DATA_GENERAL. Not: "What is the price of token X?" or "What is Apple's share price?" alone (single quoted price) → CRYPTO_PRICE_USD or STOCK_PRICE_US_EQUITY.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FINANCIAL_DATA_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FINANCIAL_DATA_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=FINANCIAL_DATA_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+FINANCIAL_DATA_GENERAL)
 
 **`FRAUD_DETECTION`** — judgment family · tier network · H2 missions: —
 
@@ -1628,7 +1629,7 @@ deterministic · asks `game` · answers `winner`, `home_team`, `away_team`, `hom
 
 Query names a specific completed sports fixture or competition and asks for its final outcome or winner. Distinct from an in-progress or live score, which is SPORTS_SCORE_GENERAL. Example: "Who won the Lakers vs Celtics game last night?" → GAME_RESULT_GENERAL. Not: "What's the current score in the Lakers vs Celtics game right now?" (still in progress) → SPORTS_SCORE_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GAME_RESULT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GAME_RESULT_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GAME_RESULT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GAME_RESULT_GENERAL)
 
 **`GAS_PRICE`** — judgment family · tier network · H2 missions: —
 
@@ -1638,7 +1639,7 @@ deterministic · asks `chain` · answers `chain`, `gas_price_gwei`, `transfer_fe
 
 Query asks for the current or recent transaction fee level on a named blockchain network. Distinct from the price of that chain's token, which is CRYPTO_PRICE_USD. Example: "What is the current gas price in Gwei on the Ethereum network?" or informally "Polygon fees felt high yesterday, what are they at now?" → GAS_PRICE_GENERAL. Not: a question with a similar 'it was X yesterday, what about now' shape but no blockchain network named → not GAS_PRICE_GENERAL (a network name like Polygon/Ethereum/Base is not a weather location, don't route this to WEATHER_FORECAST_GENERAL).
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GAS_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GAS_PRICE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=GAS_PRICE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+GAS_PRICE_GENERAL)
 
 **`IMAGE_VERIFICATION`** — judgment family · tier network · H2 missions: —
 
@@ -1658,7 +1659,7 @@ deterministic
 
 Query supplies an IP address and asks where it is located geographically. For abuse history, use THREAT_INTELLIGENCE_INDICATOR. Example: "Where is the IP address 8.8.8.8 located?" → IP_GEOLOCATION_GENERAL. Not: "Has the IP address 8.8.8.8 been flagged for abuse?" (asks about reputation/abuse history, not location) → IP_REPUTATION (if registered) or CHAT_COMPLETION_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=IP_GEOLOCATION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+IP_GEOLOCATION_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=IP_GEOLOCATION_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+IP_GEOLOCATION_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -1710,7 +1711,7 @@ deterministic · asks `tx_hash`, `chain` · answers `tx_hash`, `status`, `from`,
 
 Query supplies a transaction hash or names a specific on-chain transaction and asks for its details, status or effects. Requires an actual transaction reference, not a general question about how transactions work. Example: "What was the status and gas used of transaction 0xabc123...?" → ONCHAIN_TX_LOOKUP_GENERAL. Not: a question about a wallet's overall balance → WALLET_BALANCE_CHECK_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_TX_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_TX_LOOKUP_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=ONCHAIN_TX_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+ONCHAIN_TX_LOOKUP_GENERAL)
 
 **`RESEARCH_QUERY`** — judgment family · tier network · H2 missions: —
 
@@ -1740,7 +1741,7 @@ deterministic
 
 Query names a specific sports fixture, team or competition and asks for the current or most recent score. Distinct from asking who ultimately won a finished event, which is GAME_RESULT_GENERAL. Example: "What's the current score in the Lakers vs Celtics game right now?" → SPORTS_SCORE_GENERAL. Not: "Who won the Lakers vs Celtics game last night?" (event already concluded, asks for final outcome) → GAME_RESULT_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SPORTS_SCORE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SPORTS_SCORE_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SPORTS_SCORE_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SPORTS_SCORE_GENERAL)
 
 Not usable in an on-chain job yet: the intent has no response format.
 
@@ -1752,7 +1753,7 @@ deterministic · asks `host` · answers `certificate_valid`
 
 Query supplies a hostname and asks whether its TLS/SSL certificate is currently valid and trusted. Example: "Is the SSL certificate for example.com valid?" → SSL_VERIFICATION_CERT. Not: "Is example.com a safe site to visit?" (general safety judgment) → URL_SCAN_VERDICT.
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SSL_VERIFICATION_CERT) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SSL_VERIFICATION_CERT)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=SSL_VERIFICATION_CERT) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+SSL_VERIFICATION_CERT)
 
 **`STOCK_PRICE`** — deterministic family · tier network · H2 missions: —
 
@@ -1762,7 +1763,7 @@ deterministic · asks `ticker` · answers `price_usd`
 
 Query names a US-listed equity or its ticker and asks for the CURRENT share price in US dollars. A company mentioned in passing does not qualify. Example: "What is the current share price of Apple (AAPL)?" → STOCK_PRICE_US_EQUITY. Not: "Apple just released a new iPhone, will sales be strong?" (company named, no price asked) → CHAT_COMPLETION_GENERAL or WEB_SEARCH_GENERAL. Not: a historical price on a past date.
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=STOCK_PRICE_US_EQUITY) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+STOCK_PRICE_US_EQUITY)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=STOCK_PRICE_US_EQUITY) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+STOCK_PRICE_US_EQUITY)
 
 Not usable in an on-chain job yet: number field "price_usd" has no decimals.
 
@@ -1824,7 +1825,7 @@ deterministic · asks `token`, `chain` · answers `token`, `chain`, `holders_cou
 
 Query names a specific token or contract address and asks how many distinct addresses hold it. Not a request for the token's price, supply or market data. Example: "How many distinct holder addresses does the ERC-20 token contract 0x8335...913 on base have?" → TOKEN_HOLDER_COUNT_GENERAL. Not: "How much ETH does 0x6872...de hold on ethereum?" (one address's own balance, not a headcount of holders) → WALLET_BALANCE_CHECK_GENERAL. Not: "How deep is this token's own trading liquidity in DEX pools? Give this token's pool liquidity in USD." (a liquidity/TVL question, not a holder count, even though it names a token contract) → TVL_LOOKUP_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TOKEN_HOLDER_COUNT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_HOLDER_COUNT_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TOKEN_HOLDER_COUNT_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TOKEN_HOLDER_COUNT_GENERAL)
 
 **`TVL_LOOKUP`** — judgment family · tier network · H2 missions: —
 
@@ -1834,7 +1835,7 @@ deterministic · asks `protocol` · answers `protocol_or_chain`, `tvl_usd`, `cha
 
 Query names a specific DeFi protocol, pool or chain and asks for the total value locked in it. Distinct from a token's market capitalisation. Example: "For the token at contract 0x8335...913 on base, how deep is its own trading liquidity in DEX pools (e.g. Uniswap)? Give this token's pool liquidity in USD." → TVL_LOOKUP_GENERAL. Not: a question asking how many addresses hold a token → TOKEN_HOLDER_COUNT_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TVL_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TVL_LOOKUP_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=TVL_LOOKUP_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+TVL_LOOKUP_GENERAL)
 
 **`TWITTER_SEARCH`** — judgment family · tier network · H2 missions: —
 
@@ -1874,7 +1875,7 @@ deterministic · asks `address`, `chain`, `token` · answers `address`, `chain`,
 
 Query names a specific blockchain address or ENS name and asks for its current native-coin or token balance on a named chain. A question that merely mentions a wallet without asking what it holds does not qualify. Example: "What is the balance of vitalik.eth on ethereum?" or "How much ETH does 0x6872...de hold on ethereum?" → WALLET_BALANCE_CHECK_GENERAL. ('How much does address X hold' is a balance question about that one address, even though it uses the word 'hold.') Not: "How many holders does USDC have on ethereum?" (asks about the token's holder population, not one address's own holdings) → TOKEN_HOLDER_COUNT_GENERAL.
 
-Contribute truth sources · no module (see above). [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=WALLET_BALANCE_CHECK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+WALLET_BALANCE_CHECK_GENERAL)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=WALLET_BALANCE_CHECK_GENERAL) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+WALLET_BALANCE_CHECK_GENERAL)
 
 **`WEATHER_CHECK`** — deterministic family · tier network · H2 missions: —
 
@@ -1884,7 +1885,7 @@ deterministic · asks `location` · answers `temperature_c`
 
 Query names a specific, resolvable city and asks for the CURRENT air temperature there. Example: "What is the temperature in London right now?" → WEATHER_CHECK_TEMPERATURE. Not: a forecast for a future window (WEATHER_FORECAST_GENERAL). Not: a question with no resolvable location.
 
-Contribute truth sources · comparator already live. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=WEATHER_CHECK_TEMPERATURE) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_CHECK_TEMPERATURE)
+Contribute truth sources · no adapter. [Add it on Anjoman](https://anjoman.ai/dashboard/eval?intent=WEATHER_CHECK_TEMPERATURE) · [open bounties](../../../issues?q=is%3Aissue+is%3Aopen+WEATHER_CHECK_TEMPERATURE)
 
 **`WEATHER_FORECAST`** — judgment family · tier network · H2 missions: —
 
