@@ -71,6 +71,10 @@ def build(node, existing):
     families = {}
     for item in sorted(listing['intents'], key=lambda i: i['intent_id']):
         name = item['intent_id']
+        if item.get('canonical') is False:
+            # A miner-declared name that is not a canonical Intent on chain.
+            print(f'{name}: not a canonical Intent on chain, skipped')
+            continue
         family, family_class = family_of(node, name, cache)
         if family is None:
             raise SystemExit(f'{name}: the node gives it no registered family; tell the protocol team')

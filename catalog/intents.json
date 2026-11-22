@@ -16,7 +16,7 @@
     "intents": [
       {
         "name": "ASSET_RESERVE_ATTESTATION_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a stablecoin, tokenized asset or custodian and asks whether attested reserves back the circulating supply, cross-checking on-chain balances against a custodian or proof-of-reserves feed. Example: \"Do the attested reserves behind USDC cover its circulating supply as of the latest proof-of-reserves report?\" → ASSET_RESERVE_ATTESTATION_GENERAL. Not: \"What is USDC trading at?\" (a price) → CRYPTO_PRICE_USD. Not: \"How much USDC does this address hold?\" (one address's balance) → WALLET_BALANCE_CHECK_GENERAL.",
         "params": [
           "asset"
@@ -230,7 +230,7 @@
     "intents": [
       {
         "name": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a company and asks for its official register record: incorporation status, company number, registered address or agent, directors, beneficial owners. Example: \"What is the incorporation status and registered agent for UK company number 12345678?\" → CORPORATE_REGISTRY_LOOKUP_GENERAL. Not: \"Fill out this company record with its tax ID, headcount and executive contacts.\" (commercial enrichment beyond the register) → B2B_IDENTITY_ENRICHMENT_GENERAL.",
         "params": [
           "company",
@@ -263,12 +263,20 @@
     "intents": [
       {
         "name": "CROSS_CHAIN_STATE_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query asks whether a state root, Merkle-Patricia proof, block header or bridge message from one chain verifies against another. Requires two named chains and a specific proof, header or message. Example: \"Verify that the LayerZero message with nonce 4412 from arbitrum executed on base and that the committed state root matches.\" → CROSS_CHAIN_STATE_VERIFY_GENERAL. Not: \"How do cross-chain bridges work?\" (conceptual, nothing supplied to verify) → CHAT_COMPLETION_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "reference",
+          "chains"
+        ],
+        "answer": [
+          "address",
+          "status",
+          "chains",
+          "consistent",
+          "summary"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -616,7 +624,7 @@
     "intents": [
       {
         "name": "GRID_POWER_PRICE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a grid, node, hub or region and asks for electricity prices from the operator: locational marginal price, day-ahead or real-time spot rates. Example: \"What is the current locational marginal price at the ERCOT Houston hub, and what did day-ahead settle at?\" → GRID_POWER_PRICE_GENERAL. Not: \"What is a token or commodity trading at?\" (market instrument prices) → CRYPTO_PRICE_USD or FINANCIAL_DATA_GENERAL.",
         "params": [
           "node_or_zone",
@@ -739,7 +747,7 @@
     "intents": [
       {
         "name": "LIQUIDITY_DEPTH_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a market, pair or pool and asks for order book depth, bid-ask spread, or the slippage a stated trade size would incur at a point in time. Example: \"What is the bid-ask depth and expected slippage on a 50 ETH sell into the WETH/USDC pool on base right now?\" → LIQUIDITY_DEPTH_VERIFY_GENERAL. Not: \"How much total value is locked in that pool?\" (a TVL total, not depth at a size) → TVL_LOOKUP_GENERAL. Not: \"Which venue should I route this trade through?\" (a routing decision) → OPTIMAL_EXECUTION_ROUTE_GENERAL.",
         "params": [
           "pool",
@@ -801,7 +809,7 @@
     "intents": [
       {
         "name": "LIVE_SHELF_PRICE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a retail product, SKU or listing and asks what it currently sells for at one or more merchants. Example: \"What is the current listed price of the Sony WH-1000XM5 at Amazon and Walmart right now?\" → LIVE_SHELF_PRICE_GENERAL. Not: \"What is Sony's share price?\" (an equity quote) → STOCK_PRICE_US_EQUITY. Not: \"Is that model actually in stock?\" (availability, not price) → SKU_IN_STOCK_GENERAL.",
         "params": [
           "product",
@@ -868,7 +876,7 @@
     "intents": [
       {
         "name": "MACRO_ECONOMIC_INDICATOR_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a published macroeconomic statistic for a country or region - policy rate, CPI, unemployment, GDP - and asks for its released value or latest print. Example: \"What was the latest US CPI year-over-year print, and what is the current federal funds target range?\" → MACRO_ECONOMIC_INDICATOR_GENERAL. Not: \"What is EUR/USD right now?\" (a live market rate) → one of FX_NOW_EUR, FX_NOW_CAD, FX_NOW_SEK. Not: \"What is Apple's revenue growth this quarter?\" (company fundamentals) → FINANCIAL_DATA_GENERAL.",
         "params": [
           "indicator",
@@ -953,7 +961,7 @@
     "intents": [
       {
         "name": "MINING_HASHPRICE_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query asks what a unit of hashing power currently earns on a proof-of-work network, derived from block reward, fees and network difficulty. Example: \"What is Bitcoin hashprice per PH/s per day at current difficulty and fee levels?\" → MINING_HASHPRICE_VERIFY_GENERAL. Not: \"What is Bitcoin trading at?\" (an asset quote) → CRYPTO_PRICE_USD. Not: \"What is power costing at that hub?\" (electricity prices) → GRID_POWER_PRICE_GENERAL.",
         "params": [
           "block_height"
@@ -985,17 +993,20 @@
     "intents": [
       {
         "name": "ONCHAIN_METRIC_VERIFY_GENERAL",
-        "class": "deterministic",
-        "description": "Query asks for a specific value read from a blockchain node at a stated block height or 'latest': an event log field, gas consumed, a contract view or storage value, a contract-held token balance. The block or 'latest' anchor is what distinguishes it. Example: \"At block 21000000 on ethereum, what amount did the Transfer log in tx 0xabc... carry, and how much gas did that tx use?\" → ONCHAIN_METRIC_VERIFY_GENERAL. Not: \"What was the status of transaction 0xabc...?\" (a transaction lookup, not a named metric at a height) → ONCHAIN_TX_LOOKUP_GENERAL. Not: \"What is the balance of vitalik.eth?\" (a plain wallet balance) → WALLET_BALANCE_CHECK_GENERAL.",
+        "class": "judgment",
+        "description": "Query asks for one address's native-coin balance (ETH, POL) or its transaction count (nonce) at a stated block on ethereum, polygon or arbitrum. The block number is what distinguishes it. Example: \"What was the ETH balance of 0xd8dA...6045 at block 23000000 on ethereum?\" → ONCHAIN_METRIC_VERIFY_GENERAL. Not: \"What was the status of transaction 0xabc...?\" (a transaction lookup) → ONCHAIN_TX_LOOKUP_GENERAL. Not: \"What is the balance of vitalik.eth?\" or \"How much USDC does 0xabc... hold?\" (a current or token balance, no block) → WALLET_BALANCE_CHECK_GENERAL.",
         "params": [
           "address",
-          "block"
+          "block",
+          "chain",
+          "metric"
         ],
         "answer": [
           "balance_gwei",
           "address",
           "block",
-          "chain"
+          "chain",
+          "tx_count"
         ],
         "onchain_ready": true
       }
@@ -1039,12 +1050,21 @@
     "intents": [
       {
         "name": "PACKAGE_STATUS_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query supplies a tracking number or shipment reference and asks where the parcel is and what its latest carrier scan events are. Example: \"Where is tracking number 1Z999AA10123456784 now, and what was the last scan event?\" → PACKAGE_STATUS_GENERAL. Not: \"What would it cost to ship this and when would it arrive?\" (a quote for a parcel not yet sent) → SHIP_RATE_ETA_GENERAL. Not: \"What appointment window did dispatch commit for this stop?\" (the dispatch schedule) → DELIVERY_WINDOW_VERIFY_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "tracking_number",
+          "carrier"
+        ],
+        "answer": [
+          "tracking_number",
+          "carrier",
+          "status",
+          "delivered",
+          "last_location",
+          "last_update"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -1063,7 +1083,7 @@
     "intents": [
       {
         "name": "PAYMENT_METHOD_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query supplies a card BIN, payment token, bank account or routing number and asks whether it is valid, active and issued by the stated institution. Example: \"Is BIN 411111 a valid Visa, which issuer does it belong to, and is routing number 021000021 an active ACH route?\" → PAYMENT_METHOD_VERIFY_GENERAL. Not: \"Does this $2,400 purchase look like it will charge back?\" (a risk score on a transaction) → TRANSACTION_RISK_GENERAL.",
         "params": [
           "bin"
@@ -1186,7 +1206,7 @@
     "intents": [
       {
         "name": "REGULATORY_FILING_MONITOR_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names an issuer, ticker or regulator and asks whether a specific statutory filing has appeared, or for what it contains: 10-K, 10-Q, 8-K, exchange disclosures. Example: \"Has Tesla filed its latest 10-Q on SEC EDGAR, on what date was it accepted, and what did it disclose about margins?\" → REGULATORY_FILING_MONITOR_GENERAL. Not: \"What is Tesla's P/E ratio?\" (market data, not the filing) → FINANCIAL_DATA_GENERAL. Not: \"Is Tesla Inc registered and who are its directors?\" (a company register record) → CORPORATE_REGISTRY_LOOKUP_GENERAL.",
         "params": [
           "entity",
@@ -1475,12 +1495,19 @@
     "intents": [
       {
         "name": "SKU_IN_STOCK_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a product, SKU or listing and asks whether it is purchasable right now, in what quantity, or at which location. Example: \"Is SKU B09XS7JWHH in stock for delivery to 94107 today, and how many units are left?\" → SKU_IN_STOCK_GENERAL. Not: \"What does that SKU cost?\" (a price, not availability) → LIVE_SHELF_PRICE_GENERAL. Not: \"How many units of that SKU sit in bin 14C of our fulfilment centre?\" (internal warehouse counts) → WAREHOUSE_INVENTORY_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "sku",
+          "retailer"
+        ],
+        "answer": [
+          "sku",
+          "retailer",
+          "in_stock",
+          "quantity"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -1650,7 +1677,7 @@
     "intents": [
       {
         "name": "TRAVEL_DISRUPTION_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a flight, route or airport and asks about current operational disruption: delays, cancellations, gate changes, ground stops. Example: \"Is DL404 delayed today, and is there an FAA ground stop at ATL?\" → TRAVEL_DISRUPTION_GENERAL. Not: \"Are there seats left on DL404 tomorrow?\" (bookable inventory) → FLIGHT_AVAILABILITY_GENERAL. Not: \"Will a storm hit Atlanta tomorrow?\" (weather at a location, no flight operations) → STORM_ALERT_GENERAL.",
         "params": [
           "route_or_flight"
@@ -1742,7 +1769,7 @@
     "intents": [
       {
         "name": "VALIDATOR_PERFORMANCE_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a validator, index or staking operator on a proof-of-stake network and asks for its uptime, attestation or proposal rate, slashing history or staking yield. Example: \"What is the attestation effectiveness and uptime of validator index 412903 over the last 30 days, and has it ever been slashed?\" → VALIDATOR_PERFORMANCE_VERIFY_GENERAL. Not: \"What is the current gas price on ethereum?\" (network fee level) → GAS_PRICE_GENERAL. Not: \"What does a unit of hashrate earn today?\" (proof-of-work mining economics) → MINING_HASHPRICE_VERIFY_GENERAL.",
         "params": [
           "validator_index"
@@ -1802,12 +1829,20 @@
     "intents": [
       {
         "name": "VESSEL_TELEMETRY_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a vessel by name, MMSI or IMO and asks for its AIS-reported position, speed, heading, draft or declared destination. Example: \"What is the current AIS position, speed and draft of MMSI 636019825?\" → VESSEL_TELEMETRY_VERIFY_GENERAL. Not: \"How backed up is the port it is heading into?\" (port-level congestion) → LIVE_PORT_CONGESTION_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "vessel"
+        ],
+        "answer": [
+          "vessel",
+          "speed_knots",
+          "latitude",
+          "longitude",
+          "course_deg",
+          "observed_at"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -1953,7 +1988,7 @@
     "intents": [
       {
         "name": "AIR_QUALITY_INDEX_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Aggregates particulate matter (PM2.5/PM10), ground ozone, and composite AQI metrics from monitoring stations.",
         "params": [],
         "answer": [],
@@ -1975,7 +2010,7 @@
     "intents": [
       {
         "name": "API_HEALTH_CHECK_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Verifies REST/GraphQL API responsiveness, JSON schema payload structure, and HTTP status codes.",
         "params": [],
         "answer": [],
@@ -2102,7 +2137,7 @@
     "intents": [
       {
         "name": "CRYPTO_TRANSFER_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Verifies on-chain transaction status, gas fee burn, sender/recipient addresses, and block confirmations.",
         "params": [],
         "answer": [],
@@ -2126,7 +2161,7 @@
     "intents": [
       {
         "name": "CRYPTO_YIELD_RATE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Tracks annualized percentage yields (APY), staking reward rates, and lending pool yields across DeFi protocols.",
         "params": [
           "project",
@@ -2181,7 +2216,7 @@
     "intents": [
       {
         "name": "DNS_RECORD_LOOKUP_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Resolves and validates authoritative DNS records (A, AAAA, CNAME, MX, TXT) across global resolvers.",
         "params": [
           "name",
@@ -2386,7 +2421,7 @@
     "intents": [
       {
         "name": "LOAN_INTEREST_RATE_QUOTE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Aggregates residential mortgage APRs, prime lending rates, and personal loan interest quotes.",
         "params": [
           "rate"
@@ -2434,7 +2469,7 @@
     "intents": [
       {
         "name": "PORT_SCAN_AUDIT_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Identifies open network service ports, banner disclosures, and listening daemon protocols on specified hosts.",
         "params": [],
         "answer": [],
@@ -2535,7 +2570,7 @@
     "intents": [
       {
         "name": "SERVER_UPTIME_MONITOR_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Monitors synthetic HTTP/HTTPS endpoint availability, handshake latency, and uptime status from multiple edge regions.",
         "params": [],
         "answer": [],
@@ -2724,7 +2759,7 @@
     "intents": [
       {
         "name": "TOKEN_TOTAL_SUPPLY_VERIFY_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Verifies token circulating supply, burnt token balances, and total minted token counts on-chain.",
         "params": [
           "token"
@@ -2965,8 +3000,7 @@
         "answer": [
           "price_usd"
         ],
-        "onchain_ready": false,
-        "onchain_note": "number field \"price_usd\" has no decimals"
+        "onchain_ready": true
       }
     ]
   },
@@ -2978,7 +3012,7 @@
     "intents": [
       {
         "name": "CVE_LOOKUP_CVSS",
-        "class": "deterministic",
+        "class": "hybrid",
         "description": "Query supplies a CVE identifier and asks for its CVSS severity score. Example: \"What is the CVSS score of CVE-2021-44228?\" → CVE_LOOKUP_CVSS. Not: \"What are the most dangerous vulnerabilities this year?\" (no CVE identifier) → WEB_SEARCH_GENERAL. Not: ranking a set of findings → VULNERABILITY_TRIAGE_GENERAL.",
         "params": [
           "cve_id"
@@ -3049,7 +3083,7 @@
     "intents": [
       {
         "name": "FINANCIAL_DATA_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query asks for market data, company fundamentals, or financial statistics beyond a single quoted price. Example: \"Give the market cap and 24h trading volume for token X on base.\" or \"What is Apple's P/E ratio and revenue growth this quarter?\" → FINANCIAL_DATA_GENERAL. Not: \"What is the price of token X?\" or \"What is Apple's share price?\" alone (single quoted price) → CRYPTO_PRICE_USD or STOCK_PRICE_US_EQUITY.",
         "params": [
           "asset"
@@ -3097,7 +3131,7 @@
     "intents": [
       {
         "name": "GAME_RESULT_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a specific completed sports fixture or competition and asks for its final outcome or winner. Distinct from an in-progress or live score, which is SPORTS_SCORE_GENERAL. Example: \"Who won the Lakers vs Celtics game last night?\" → GAME_RESULT_GENERAL. Not: \"What's the current score in the Lakers vs Celtics game right now?\" (still in progress) → SPORTS_SCORE_GENERAL.",
         "params": [
           "game"
@@ -3122,7 +3156,7 @@
     "intents": [
       {
         "name": "GAS_PRICE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query asks for the current or recent transaction fee level on a named blockchain network. Distinct from the price of that chain's token, which is CRYPTO_PRICE_USD. Example: \"What is the current gas price in Gwei on the Ethereum network?\" or informally \"Polygon fees felt high yesterday, what are they at now?\" → GAS_PRICE_GENERAL. Not: a question with a similar 'it was X yesterday, what about now' shape but no blockchain network named → not GAS_PRICE_GENERAL (a network name like Polygon/Ethereum/Base is not a weather location, don't route this to WEATHER_FORECAST_GENERAL).",
         "params": [
           "chain"
@@ -3168,12 +3202,20 @@
     "intents": [
       {
         "name": "IP_GEOLOCATION_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query supplies an IP address and asks where it is located geographically. For abuse history, use THREAT_INTELLIGENCE_INDICATOR. Example: \"Where is the IP address 8.8.8.8 located?\" → IP_GEOLOCATION_GENERAL. Not: \"Has the IP address 8.8.8.8 been flagged for abuse?\" (asks about reputation/abuse history, not location) → IP_REPUTATION (if registered) or CHAT_COMPLETION_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "ip"
+        ],
+        "answer": [
+          "ip",
+          "country",
+          "city",
+          "latitude",
+          "longitude",
+          "isp"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -3278,7 +3320,7 @@
     "intents": [
       {
         "name": "ONCHAIN_TX_LOOKUP_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query supplies a transaction hash or names a specific on-chain transaction and asks for its details, status or effects. Requires an actual transaction reference, not a general question about how transactions work. Example: \"What was the status and gas used of transaction 0xabc123...?\" → ONCHAIN_TX_LOOKUP_GENERAL. Not: a question about a wallet's overall balance → WALLET_BALANCE_CHECK_GENERAL.",
         "params": [
           "tx_hash",
@@ -3350,12 +3392,20 @@
     "intents": [
       {
         "name": "SPORTS_SCORE_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a specific sports fixture, team or competition and asks for the current or most recent score. Distinct from asking who ultimately won a finished event, which is GAME_RESULT_GENERAL. Example: \"What's the current score in the Lakers vs Celtics game right now?\" → SPORTS_SCORE_GENERAL. Not: \"Who won the Lakers vs Celtics game last night?\" (event already concluded, asks for final outcome) → GAME_RESULT_GENERAL.",
-        "params": [],
-        "answer": [],
-        "onchain_ready": false,
-        "onchain_note": "the intent has no response format"
+        "params": [
+          "game"
+        ],
+        "answer": [
+          "home_team",
+          "away_team",
+          "home_score",
+          "away_score",
+          "status",
+          "date"
+        ],
+        "onchain_ready": true
       }
     ]
   },
@@ -3395,8 +3445,7 @@
         "answer": [
           "price_usd"
         ],
-        "onchain_ready": false,
-        "onchain_note": "number field \"price_usd\" has no decimals"
+        "onchain_ready": true
       }
     ]
   },
@@ -3524,7 +3573,7 @@
     "intents": [
       {
         "name": "TOKEN_HOLDER_COUNT_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a specific token or contract address and asks how many distinct addresses hold it. Not a request for the token's price, supply or market data. Example: \"How many distinct holder addresses does the ERC-20 token contract 0x8335...913 on base have?\" → TOKEN_HOLDER_COUNT_GENERAL. Not: \"How much ETH does 0x6872...de hold on ethereum?\" (one address's own balance, not a headcount of holders) → WALLET_BALANCE_CHECK_GENERAL. Not: \"How deep is this token's own trading liquidity in DEX pools? Give this token's pool liquidity in USD.\" (a liquidity/TVL question, not a holder count, even though it names a token contract) → TVL_LOOKUP_GENERAL.",
         "params": [
           "token",
@@ -3548,7 +3597,7 @@
     "intents": [
       {
         "name": "TVL_LOOKUP_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a specific DeFi protocol, pool or chain and asks for the total value locked in it. Distinct from a token's market capitalisation. Example: \"For the token at contract 0x8335...913 on base, how deep is its own trading liquidity in DEX pools (e.g. Uniswap)? Give this token's pool liquidity in USD.\" → TVL_LOOKUP_GENERAL. Not: a question asking how many addresses hold a token → TOKEN_HOLDER_COUNT_GENERAL.",
         "params": [
           "protocol"
@@ -3638,7 +3687,7 @@
     "intents": [
       {
         "name": "WALLET_BALANCE_CHECK_GENERAL",
-        "class": "deterministic",
+        "class": "judgment",
         "description": "Query names a specific blockchain address or ENS name and asks for its current native-coin or token balance on a named chain. A question that merely mentions a wallet without asking what it holds does not qualify. Example: \"What is the balance of vitalik.eth on ethereum?\" or \"How much ETH does 0x6872...de hold on ethereum?\" → WALLET_BALANCE_CHECK_GENERAL. ('How much does address X hold' is a balance question about that one address, even though it uses the word 'hold.') Not: \"How many holders does USDC have on ethereum?\" (asks about the token's holder population, not one address's own holdings) → TOKEN_HOLDER_COUNT_GENERAL.",
         "params": [
           "address",
