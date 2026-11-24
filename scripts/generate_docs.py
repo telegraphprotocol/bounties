@@ -34,7 +34,7 @@ def contribute(intent, family):
     """What a contributor can add for one Intent. An adapter is registered on the family,
     and only a judgment or hybrid family takes one. A deterministic Intent takes no adapter."""
     material = MATERIAL.get(intent['class'], 'evaluation material')
-    if intent['class'] != family['class'] or family['class'] == 'deterministic':
+    if family['class'] == 'deterministic':
         return f'{material} · no adapter'
     return f"{material} · adapter on `{family['name']}`"
 

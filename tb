@@ -96,7 +96,7 @@ if cmd=='intent':
         if i.get('params'): print('  asks:    '+', '.join(i['params']))
         if i.get('answer'): print('  answers: '+', '.join(i['answer']))
         contribute=MATERIAL.get(i['class'],'evaluation material')
-        if i['class']!=x['class'] or x['class']=='deterministic':
+        if x['class']=='deterministic':
             contribute+='; no adapter (comparator modules are no longer accepted)'
         else:
             contribute+='; or an evaluator adapter on '+x['name']
