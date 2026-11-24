@@ -31,7 +31,9 @@ TIER_ORDER = {'mandatory': 0, 'existing': 1, 'network': 2}
 
 
 def get(url):
-    with urllib.request.urlopen(url, timeout=60) as r:
+    # The node's CDN answers Python's default User-Agent with 403.
+    req = urllib.request.Request(url, headers={'User-Agent': 'telegraph-bounties-sync'})
+    with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read())
 
 
