@@ -121,16 +121,16 @@ Every Intent name in the catalogue, and in each bounty Issue, links there with t
 already chosen. The guides are
 [Contribute Evaluation Data](https://anjoman.ai/docs/scoring/contribute-evaluation-data) for
 material and
-[Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module) for a
-module. Nothing is submitted by posting it on GitHub.
+[Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module) for an
+adapter. Nothing is submitted by posting it on GitHub.
 
 Then check what the network made of it, on the same page: each row of material ends up
-`eligible` or `rejected` with a reason, and a module's registration shows its stage.
+`eligible` or `rejected` with a reason, and an adapter's registration shows its stage.
 
 ### 3. Link it back here
 
 Comment `/submit` on the Issue with the Intent you worked on and the address you uploaded
-from, or your module's registration id. A maintainer verifies it with the network's own
+from, or your adapter's registration id. A maintainer verifies it with the network's own
 public reads, so give enough to find it. Your address is public once you post it; that is
 your choice to make.
 

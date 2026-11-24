@@ -4,7 +4,7 @@ This repository is designed to be readable by humans **and agents**.
 
 ## Machine-readable sources
 
-- `catalog/intents.json` — the Intent catalogue, **generated from the node** by `scripts/sync_catalog.py`: one entry per family, its kind, and the Intents under it with their own kind, parameters and answer fields. Never edit those fields by hand; `--check` fails when the file no longer matches the node. The tier, Category, priority score and mission map are the only hand-kept parts. Which module is live for an Intent is decided by the protocol's own competition, not by this file.
+- `catalog/intents.json` — the Intent catalogue, **generated from the node** by `scripts/sync_catalog.py`: one entry per family, its kind, and the Intents under it with their own kind, parameters and answer fields. Never edit those fields by hand; `--check` fails when the file no longer matches the node. The tier, Category, priority score and mission map are the only hand-kept parts. Which adapter is live for an Intent is decided by the protocol's own competition, not by this file.
 - `catalog/missions.json` — Season II mission → Intent dependency map.
 - `seed/h2-bounties.json` — maintainer-reviewed seed candidates; only entries with `"publish": true` may be published by `make seed-h2`.
 - GitHub Issues — live source of truth for public bounty state.

@@ -1,4 +1,4 @@
-name: Scoring module gap
+name: Evaluator adapter gap
 description: An Intent family needs a better evaluator adapter, or scores answers badly.
 title: "[Evaluator] "
 labels: ["work:evaluator", "gap:evaluation", "status:triage"]
@@ -15,14 +15,14 @@ body:
     id: family
     attributes:
       label: Family
-      description: The family a module would be registered on, and its kind as the catalogue gives it.
+      description: The family an adapter would be registered on, and its kind as the catalogue gives it.
       placeholder: e.g. CODE_REVIEW (judgment)
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: What the module should do better
+      label: What the adapter should do better
       description: What the current scoring gets wrong, and what yours would do instead. Name the Intents under the family that it would serve.
     validations:
       required: true
@@ -30,7 +30,7 @@ body:
     id: outcome
     attributes:
       label: What would close it
-      description: The observable result, normally "a module is live on this family and scores its Intents". The network decides that on its own checks, so say what you would show a maintainer.
+      description: The observable result, normally "an adapter is live on this family and scores its Intents". The network decides that on its own checks, so say what you would show a maintainer.
     validations:
       required: true
   - type: checkboxes
@@ -38,7 +38,7 @@ body:
     attributes:
       label: Check
       options:
-        - label: I have checked the family's kind in the catalogue, and a module of that kind can serve the Intents I named.
+        - label: I have checked the family's kind in the catalogue. It is judgment or hybrid, so it takes an adapter.
           required: true
         - label: This Issue discloses no secret, private key, customer data or exploitable weakness.
           required: true
