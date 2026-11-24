@@ -47,21 +47,6 @@ def intent_detail(node, name):
         raise
 
 
-def family_of(node, intent, cache):
-    """The registered family an Intent belongs to: the longest '_'-prefix of its name that
-    the node gives a class of its own. An unregistered prefix has no class, which is how a
-    real family (STOCK_PRICE) is told apart from a stretch of a name (STOCK_PRICE_US)."""
-    parts = intent.split('_')
-    for cut in range(len(parts) - 1, 0, -1):
-        candidate = '_'.join(parts[:cut])
-        if candidate not in cache:
-            resolve = get(f'{node}/api/wasm?intent={candidate}&resolve={candidate}').get('resolve') or {}
-            cache[candidate] = resolve.get('class') or ''
-        if cache[candidate]:
-            return candidate, cache[candidate]
-    return None, ''
-
-
 def fields(schema, key):
     return [f['name'] for f in (schema or {}).get(key) or []]
 
@@ -69,7 +54,6 @@ def fields(schema, key):
 def build(node, existing):
     kept = {x['name']: {k: x[k] for k in KEPT if k in x} for x in existing}
     listing = get(f'{node}/engine/v1/intents')
-    cache = {}
     families = {}
     for item in sorted(listing['intents'], key=lambda i: i['intent_id']):
         name = item['intent_id']
@@ -77,9 +61,11 @@ def build(node, existing):
             # A miner-declared name that is not a canonical Intent on chain.
             print(f'{name}: not a canonical Intent on chain, skipped')
             continue
-        family, family_class = family_of(node, name, cache)
-        if family is None:
-            raise SystemExit(f'{name}: the node gives it no registered family; tell the protocol team')
+        # The node names the family an adapter registers on, and the kind it is tested as.
+        family = item.get('family')
+        family_class = (item.get('adapter_registration') or {}).get('tested_as')
+        if not family or not family_class:
+            raise SystemExit(f'{name}: the node gives it no family; tell the protocol team')
         detail = intent_detail(node, name) or {}
         entry = {
             'name': name,
