@@ -4,7 +4,7 @@ This repository is designed to be readable by humans **and agents**.
 
 ## Machine-readable sources
 
-- `catalog/intents.json` — the Intent catalogue, **generated from the node** by `scripts/sync_catalog.py`: one entry per family, its kind, and the Intents under it with their own kind, parameters and answer fields. Never edit those fields by hand; `--check` fails when the file no longer matches the node. The tier, Category, priority score and mission map are the only hand-kept parts. Which module is live for an Intent is decided by the protocol's own competition, not by this file.
+- `catalog/intents.json` — the Intent catalogue, **generated from the node** by `scripts/sync_catalog.py`: one entry per family, its kind, and the Intents under it with their own kind, parameters and answer fields. Never edit those fields by hand; `--check` fails when the file no longer matches the node. The tier, Category, priority score and mission map are the only hand-kept parts. Which adapter is live for an Intent is decided by the protocol's own competition, not by this file.
 - `catalog/missions.json` — Season II mission → Intent dependency map.
 - `seed/h2-bounties.json` — maintainer-reviewed seed candidates; only entries with `"publish": true` may be published by `make seed-h2`.
 - GitHub Issues — live source of truth for public bounty state.
@@ -21,7 +21,7 @@ This repository is designed to be readable by humans **and agents**.
 7. A mission output or new Provider/model version is not automatically a new Intent. Prefer reusable intelligence primitives.
 8. For `source:release` work, cite the canonical release source and never require a predetermined rank.
 9. Do not invent customer demand, private commitments, provider endorsement, or usage to justify a public bounty.
-10. For evaluation work, take an Intent's kind and what it needs from the node (`catalog/intents.json`, `docs/INTENTS.md`, `./tb intent <NAME>`), never from a name, an older Issue or on-chain readiness. A scoring module is registered on a family and scores only the Intents of the family's own kind, so a deterministic Intent under a judgment family has no module anyone can build for it: never ask for one. Not every Intent needs its own GitHub Issue, but every Intent must be findable in the catalogue with its real requirements. Keep the qualification material the network holds back secret.
+10. For evaluation work, take an Intent's kind and what it needs from the node (`catalog/intents.json`, `docs/INTENTS.md`, `./tb intent <NAME>`), never from a name, an older Issue or on-chain readiness. An adapter is registered on the parent family and only a judgment or hybrid family takes one. A deterministic Intent takes no adapter and the node refuses comparator modules: never ask for one. Not every Intent needs its own GitHub Issue, but every Intent must be findable in the catalogue with its real requirements. Keep the qualification material the network holds back secret.
 11. No mechanical admission counter, source domain count, synthetic answer set or passing WASM output proves semantic correctness. Use reproducible independent evidence where possible.
 12. Treat exported opportunity records as **triage proposals**. Never auto-claim, auto-approve, promise bounty rewards, or alter protocol Canonical Evaluator/Validator state from GitHub.
 13. Do not imply that per-Intent protocol Evaluator emissions pay for merely supplying data or opening/closing GitHub work.

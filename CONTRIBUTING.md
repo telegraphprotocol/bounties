@@ -100,16 +100,15 @@ Intent as. What each kind needs:
 
 | Kind | Evaluation material | Scoring module |
 |---|---|---|
-| **deterministic** | **Truth sources**: free public APIs (no key) that answer the Intent's question | None to build. The network's own comparator does the comparing. |
+| **deterministic** | **Truth sources**: free public APIs (no key) that answer the Intent's question | None to build. The node's built-in checker does the comparing, and comparator modules are no longer accepted. |
 | **hybrid** | Truth sources **and** question pairs | An **evaluator adapter**, registered on the family |
 | **judgment** | **Question pairs**: a real question with a better and a worse answer | An **evaluator adapter**, registered on the family |
 
-A scoring module is registered on a **family** (`FX_NOW`), never on one Intent
-(`FX_NOW_EUR`), and the family's own kind decides which kind of module it takes. A family's
-module also scores only the Intents of the family's own kind. So a **deterministic Intent
-under a judgment family has no module anyone can build for it**: one registered there waits
-as `pending` with `awaiting_compatible_material` and never goes live. The catalogue says
-which Intents those are, so check before you build. Don't infer requirements from an
+An adapter is registered on the **parent family** (`GAS_PRICE`, not `GAS_PRICE_GENERAL`),
+never on one Intent, and only a judgment or hybrid family takes one. A **deterministic
+Intent takes no adapter at all**, and the node refuses comparator modules. Every Intent has
+the same kind as its family. Check the kind in the catalogue, with `./tb intent <NAME>`, or
+with `GET /engine/v1/intents/<intent>` before you build. Don't infer requirements from an
 Intent's name, from an older Issue, or from its on-chain readiness, which is a separate
 thing from its kind.
 
@@ -122,16 +121,16 @@ Every Intent name in the catalogue, and in each bounty Issue, links there with t
 already chosen. The guides are
 [Contribute Evaluation Data](https://anjoman.ai/docs/scoring/contribute-evaluation-data) for
 material and
-[Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module) for a
-module. Nothing is submitted by posting it on GitHub.
+[Build an Evaluator Adapter](https://anjoman.ai/docs/scoring/build-a-scoring-module) for an
+adapter. Nothing is submitted by posting it on GitHub.
 
 Then check what the network made of it, on the same page: each row of material ends up
-`eligible` or `rejected` with a reason, and a module's registration shows its stage.
+`eligible` or `rejected` with a reason, and an adapter's registration shows its stage.
 
 ### 3. Link it back here
 
 Comment `/submit` on the Issue with the Intent you worked on and the address you uploaded
-from, or your module's registration id. A maintainer verifies it with the network's own
+from, or your adapter's registration id. A maintainer verifies it with the network's own
 public reads, so give enough to find it. Your address is public once you post it; that is
 your choice to make.
 

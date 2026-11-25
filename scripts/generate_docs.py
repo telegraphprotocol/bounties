@@ -31,14 +31,11 @@ def bounty_link(name):
 
 
 def contribute(intent, family):
-    """What a contributor can add for one Intent. A scoring module is registered on the
-    family, and a family's module scores only the Intents of the family's own kind, so an
-    Intent of another kind has no module anyone can build for it."""
+    """What a contributor can add for one Intent. An adapter is registered on the family,
+    and only a judgment or hybrid family takes one. A deterministic Intent takes no adapter."""
     material = MATERIAL.get(intent['class'], 'evaluation material')
-    if intent['class'] != family['class']:
-        return f'{material} · no module (see above)'
     if family['class'] == 'deterministic':
-        return f'{material} · comparator already live'
+        return f'{material} · no adapter'
     return f"{material} · adapter on `{family['name']}`"
 
 
@@ -56,14 +53,14 @@ def render_intents():
         'Anyone can add material. It goes to the network through Anjoman:',
         f'[Evaluate]({EVAL}). Every Intent name below opens that page with the Intent already chosen.',
         f'The format, the limits and the reasons a row is turned down: [Contribute Evaluation Data]({DOCS}/contribute-evaluation-data).', '',
-        '## Scoring modules: which families take one', '',
-        'A scoring module is registered on a **family**, never on a single Intent, and the',
-        "family's own kind decides which kind it takes. A family's module also scores only the",
-        "Intents of the family's own kind. So:", '',
-        '- A **judgment** or **hybrid** family takes an **evaluator adapter**. A better adapter can replace the one in place, so this is open work.',
-        '- A **deterministic** family takes a **comparator module**. A comparator has no model: it only has to compute the network\'s fixed comparison rule, so there is no better one to build.',
-        '- A **deterministic Intent under a judgment family** is scored by the network\'s own shared comparator. **Nothing registered on that family can score it**, so there is no module to build for it: one sent there waits as `pending` with `awaiting_compatible_material` and never goes live. The Contribute column says so per Intent.', '',
-        f'How to build and register one: [Build an Evaluator Adapter]({DOCS}/build-a-scoring-module).', '',
+        '## Adapters: which families take one', '',
+        'An evaluator adapter is registered on a **family** (the parent prefix, for example',
+        '`GAS_PRICE`, not `GAS_PRICE_GENERAL`), never on a single Intent. Every Intent has the',
+        "same kind as its family, and the family's kind decides what it takes. So:", '',
+        '- A **judgment** or **hybrid** family takes an **evaluator adapter** (a LoRA package). A better adapter can replace the one in place, so this is open work.',
+        '- A **deterministic** family takes **no adapter**. The node scores it with its built-in checker. **Comparator modules are no longer accepted**, so do not build one. Contribute truth sources instead.', '',
+        'Check an Intent\'s kind with `GET /engine/v1/intents/<intent>` or `./tb intent <NAME>`.', '',
+        f'How to build and register an adapter: [Build an Evaluator Adapter]({DOCS}/build-a-scoring-module).', '',
         '## No open Issue for your Intent?', '',
         'You can still contribute. The network takes material for every Intent listed here,',
         'whether or not a bounty exists for it. GitHub is where bounty work is claimed, proven',

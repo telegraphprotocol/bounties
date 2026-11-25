@@ -38,6 +38,8 @@ for x in intents:
         assert x.get('intents'), f"{x['name']}: on the network but serves no Intent"
         for i in x['intents']:
             assert i['class'] in CLASSES, f"{i['name']}: class {i['class']!r} is not one the node uses"
+            # The docs promise this; if the node breaks it, fix the docs too.
+            assert i['class'] == x['class'], f"{i['name']} is {i['class']} but its family {x['name']} is {x['class']}"
             assert i['name'].startswith(x['name']), f"{i['name']} is not under the family {x['name']}"
             assert i['name'] not in seen_intents, f"{i['name']} is listed under two families"
             seen_intents.add(i['name'])
